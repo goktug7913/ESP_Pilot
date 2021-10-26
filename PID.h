@@ -1,26 +1,26 @@
-#include "Controller.h"
 #include "Config.h"
 #include "definitions.h"
 #include "Arduino.h"
+#include <array>
 #pragma once
 
 class PID {
   public:
+  
+  PID();
+  PID(float p_gain, float i_gain, float d_gain);
 
-  int     throttle;                                 // Throttle signal
-  int     pid_esc1, pid_esc2, pid_esc3, pid_esc4;   // Final PWM Signals combined with throttle for each ESC
+  // Public Functions of the PID instance
 
-  float   pid_pitch, pid_roll, pid_yaw;
-  float   rx_angles[3];                             //roll pitch yaw
+  float               Calculate(float pv, float target);
+  void                SetGains(float p_gain, float i_gain, float d_gain);
+  std::array<float,3> GetGains();
 
-  float   pErr_pitch, pErr_roll, pErr_yaw;          // P-Term Errors
-  float   iErr_pitch, iErr_roll, iErr_yaw;          // I-Term Errors
-  float   dErr_pitch, dErr_roll, dErr_yaw;          // D-Term Errors
+  float Kp, Ki, Kd;   //PID Gains
+  float p, i, d;      //Error values
+  float p_prev;       //Previous P Term
+  float dT = 2.5;    //Delta time in millisecs
 
-  float   iErr_pitch_prev, iErr_roll_prev, iErr_yaw_prev; // Previous I-Term Errors
-
-  unsigned long Tstart, Tend;
-
-  void calculatePid();
-  void calculateTargets();
+  float iMax =  4000;
+  float iMin = -4000;
 };

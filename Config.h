@@ -7,18 +7,27 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const static uint8_t    pwm_ch_amt = PWM_CHANNELS_NUM;
 
-typedef struct{
+struct FC_cfg{
   uint32_t          header = CFG_MAGIC;
 
   //Control
-  float             p_gain = 25;
-  float             i_gain = 1;
-  float             d_gain = 1;
+  float             Kp_pitch = 0.8;
+  float             Ki_pitch = 0.001;
+  float             Kd_pitch = 4;
+
+  float             Kp_roll = 0.8;
+  float             Ki_roll = 0.001;
+  float             Kd_roll = 4;
+
+  float             Kp_yaw = 0.8;
+  float             Ki_yaw = 0.001;
+  float             Kd_yaw = 4;
+
   uint8_t           esc_pwm_hz = PWM_FREQ;
-  uint8_t           max_angle = 20;
+  uint8_t           max_angle = 10;
 
   //Settings
-  float             vBat = 12.6;
+  float             vBat = 11.1;
   bool              vBat_compensation = 0;
 
   //Aux modules
@@ -40,5 +49,4 @@ typedef struct{
   uint8_t                 rx_deadzone = RX_DEADZONE;
 
   //uint32_t          footer = CFG_MAGIC2;
-
-} FC_cfg;
+};

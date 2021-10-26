@@ -2,7 +2,9 @@
 #define SCREEN_WIDTH       128        //OLED display width, in pixels
 #define SCREEN_HEIGHT      32         //OLED display height, in pixels
 
-#define PWM_FREQ           100        //ESC Control signal, Default: 50Hz, 100Hz for more responsiveness
+#define MPU_UPSIDEDOWN     1          //Enable if MPU chip faces downward!
+
+#define PWM_FREQ           250        //ESC Control signal, Default: 50Hz, 100Hz for more responsiveness
 #define PWM_MIN_DUTY       1000       //ESC Minimum Pulse Width
 #define PWM_MAX_DUTY       2000       //ESC Maximum Pulse Width
 #define ESC_1              26         //PWM0A Pin
