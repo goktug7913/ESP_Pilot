@@ -1,9 +1,14 @@
+#ifndef CONTROLLER_H_
+#define CONTROLLER_H_
+
 #include <array>
 #include "Config.h"
 #include "PID.h"
 #include <MPU6050_light.h>
-#include "driver/mcpwm.h"             //ESC PWM control
+#include "driver/mcpwm.h"
+#include "ConfigSuite.h"
 #pragma once
+
 
 
 class FC{
@@ -33,4 +38,9 @@ class FC{
   void OutputTransform();
   void MotionUpdate();
   void writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4);
+
+  void parseCommand();
+  void disarm();
 };
+
+#endif

@@ -22,13 +22,15 @@
 #include "ConfigSuite.h"              //Configuration manager, responsible for managing and verifying config
 #include "PID.h"
 #include "Controller.h"               //Master Flight Control Class
+#include "Telemetry.h"
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // GLOBAL OBJECTS- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//CfgMan, FliCon and cfg are created after defining them due to scope problems... (fix that)
 FC FliCon;
 FC_cfg cfg;
 ConfigSuite CfgMan;
+TelemetryManager Logger;
+
 SPIClass* hspi = nullptr; // SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);
 
@@ -109,8 +111,9 @@ bool ledset = 0;
 void loop() {
   // Program should not stay in this loop for more than a second or two during flight
   // You should get back into the flight loop as fast as possible if fallback happens
-  FliCon.writeEsc(1000,1000,1000,1000);
-  parseCommand();
+
+  //FliCon.writeEsc(1000,1000,1000,1000);
+  FliCon.parseCommand();
 
   if(FliCon.rx_raw[4] == 2000){FliCon.armed = 1;}  // Arm on CH5 high
 
@@ -144,8 +147,8 @@ void coldstart(){
   Wire.begin(-1, -1, 600000);
   
   EEPROM.begin(EEPROM_SIZE);
-  //CfgMan.loadCfg();
-  //CfgMan.applyDraftCfg();
+  CfgMan.loadCfg();
+  CfgMan.applyDraftCfg();
 
   rmt_init();
   
@@ -212,52 +215,6 @@ void TryHovering(){}
 // - - - - - - - - - - - - - - - - -
 void Fail(){}
 // - - - - - - - - - - - - - - - - -
-void parseCommand(){
-  uint8_t cmd;
-
-  if (Serial.available() > 0) {
-    // wait for cfg mode command
-    cmd = Serial.read();
-  } else {return;}
-
-  switch (cmd){
-    // - - - - - - - - - - - - - - - - -
-    case CFG_MODE:
-      FliCon.usbmode = 1;
-      Serial.write(HANDSHAKE);
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case READ_CFG:
-      CfgMan.loadCfg();
-      CfgMan.sendCfg();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case WRITE_CFG:
-      CfgMan.receiveCfg();
-      CfgMan.writeCfg();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case ARM_TETHERED:
-      FliCon.armed = 1;
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case DISARM:
-      disarm();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case RESTART_FC:
-      ESP.restart();
-    break;
-    // - - - - - - - - - - - - - - - - -
-  }
-}
-// - - - - - - - - - - - - - - - - -
-void disarm(){
-  for(int i = 0; i<200;i++){ // Force rotor stop? weird bug!!
-  if(i==0){FliCon.armed = 0;}
-  FliCon.writeEsc(0,0,0,0);
-  }
-}
 // - - - - - - - - - - - - - - - - -
 /*void Receive(){
   uint8_t pipe;

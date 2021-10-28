@@ -33,6 +33,8 @@
 #define ARM_TETHERED      76    //Arm the quad while connected for debugging/testing
 #define DISARM            77    //Disarm
 #define RESTART_FC        78    //Reboot ESP32
+#define TELEMETRY_START   91    //Request serial telemetry
+#define TELEMETRY_STOP    92    //Stop serial telemetry
 
 //ESP Callbacks
 #define HANDSHAKE         71    //Serial connected

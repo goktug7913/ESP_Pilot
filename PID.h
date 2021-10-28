@@ -1,6 +1,5 @@
 #include "Config.h"
 #include "definitions.h"
-#include "Arduino.h"
 #include <array>
 #pragma once
 
@@ -21,6 +20,6 @@ class PID {
   float p_prev;       //Previous P Term
   float dT = 2.5;    //Delta time in millisecs
 
-  float iMax =  4000;
-  float iMin = -4000;
+  float iMax =  2000;
+  float iMin = -2000;
 };

@@ -1,6 +1,9 @@
 #include "Controller.h"
+#include "Telemetry.h"
 
 extern FC_cfg cfg;
+extern ConfigSuite CfgMan;
+extern TelemetryManager Logger;
 extern MPU6050 mpu;
 
 FC::FC(){
@@ -13,7 +16,8 @@ FC::FC(){
 void FC::Start(){
   while(armed){
     if(rx_raw[4] < 1600 && rx_raw[4] > 1400){writeEsc(rx_raw[2], rx_raw[2], rx_raw[2], rx_raw[2]);} // Bypass PID when SWC is pos2, for ESC signal calibration
-
+    
+    parseCommand();
     MotionUpdate();
     InputTransform();
 
@@ -26,7 +30,8 @@ void FC::Start(){
 
     OutputTransform();
     
-    if(rx_raw[4] < 1250){armed = 0;}  // Disarm if CH5 low
+    if (rx_raw[4] < 1250){armed = 0;}  // Disarm if CH5 low
+    if (Logger.enableserial){Logger.SerialSendFrame();} // Send telemetry over serial when activated
   }
 }
 
@@ -118,4 +123,59 @@ void FC::writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4){
   mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, esc2);
   mcpwm_set_duty_in_us(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, esc3);
   mcpwm_set_duty_in_us(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_B, esc4);
+}
+
+void FC::parseCommand(){
+  uint8_t cmd;
+
+  if (Serial.available() > 0) {
+    // wait for cfg mode command
+    cmd = Serial.read();
+  } else {return;}
+
+  switch (cmd){
+    // - - - - - - - - - - - - - - - - -
+    case CFG_MODE:
+      usbmode = 1;
+      Serial.write(HANDSHAKE);
+    break;
+    // - - - - - - - - - - - - - - - - -
+    case READ_CFG:
+      CfgMan.loadCfg();
+      CfgMan.sendCfg();
+    break;
+    // - - - - - - - - - - - - - - - - -
+    case WRITE_CFG:
+      CfgMan.receiveCfg();
+      CfgMan.writeCfg();
+    break;
+    // - - - - - - - - - - - - - - - - -
+    case ARM_TETHERED:
+      armed = 1;
+    break;
+    // - - - - - - - - - - - - - - - - -
+    case DISARM:
+      disarm();
+    break;
+    // - - - - - - - - - - - - - - - - -
+    case RESTART_FC:
+      ESP.restart();
+    break;
+    // - - - - - - - - - - - - - - - - -
+    case TELEMETRY_START:
+      Logger.StartSerial();
+    break;
+    // - - - - - - - - - - - - - - - - -
+    case TELEMETRY_STOP:
+      Logger.StopSerial();
+    break;
+    // - - - - - - - - - - - - - - - - -
+  }
+}
+
+void FC::disarm(){
+  for(int i = 0; i<200;i++){ // Force rotor stop? weird bug!!
+  if(i==0){armed = 0;}
+  writeEsc(0,0,0,0);
+  }
 }
