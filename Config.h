@@ -11,20 +11,20 @@ struct FC_cfg{
   uint32_t          header = CFG_MAGIC;
 
   //Control
-  float             Kp_pitch = 0.8;
-  float             Ki_pitch = 0.001;
-  float             Kd_pitch = 4;
+  float             Kp_pitch = 1.6;
+  float             Ki_pitch = 0.006;
+  float             Kd_pitch = 8;
 
-  float             Kp_roll = 0.8;
-  float             Ki_roll = 0.001;
-  float             Kd_roll = 4;
+  float             Kp_roll = 1.6;
+  float             Ki_roll = 0.006;
+  float             Kd_roll = 8;
 
-  float             Kp_yaw = 0.8;
-  float             Ki_yaw = 0.001;
-  float             Kd_yaw = 4;
+  float             Kp_yaw = 1.6;
+  float             Ki_yaw = 0.006;
+  float             Kd_yaw = 8;
 
   uint8_t           esc_pwm_hz = PWM_FREQ;
-  uint8_t           max_angle = 10;
+  uint8_t           max_angle = 14;
 
   //Settings
   float             vBat = 11.1;

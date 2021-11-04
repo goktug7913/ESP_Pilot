@@ -23,6 +23,7 @@
 #include "PID.h"
 #include "Controller.h"               //Master Flight Control Class
 #include "Telemetry.h"
+#include "SerialManager.h"
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // GLOBAL OBJECTS- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -30,6 +31,7 @@ FC FliCon;
 FC_cfg cfg;
 ConfigSuite CfgMan;
 TelemetryManager Logger;
+SerialMgr SerialMan;
 
 SPIClass* hspi = nullptr; // SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);
@@ -113,7 +115,7 @@ void loop() {
   // You should get back into the flight loop as fast as possible if fallback happens
 
   //FliCon.writeEsc(1000,1000,1000,1000);
-  FliCon.parseCommand();
+  SerialMan.ReceiveCmd();
 
   if(FliCon.rx_raw[4] == 2000){FliCon.armed = 1;}  // Arm on CH5 high
 

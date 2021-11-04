@@ -21,6 +21,7 @@ void TelemetryManager::StopSerial(){
 
 void TelemetryManager::SerialSendFrame(){
   SaveFrame();
+  //Serial.write(TMTY_DATA_FLAG);
   Serial.write((byte*)&current_frame, sizeof(telemetry_frame));  //weird casting here lol  
 }
 
