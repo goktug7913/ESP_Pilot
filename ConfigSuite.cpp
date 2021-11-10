@@ -64,3 +64,7 @@ bool ConfigSuite::writeCfg() {
     return 0;
   }
 }
+
+FC_cfg* ConfigSuite::requestConfig(){
+  return &current_config;
+}

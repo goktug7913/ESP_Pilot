@@ -18,6 +18,8 @@ class ConfigSuite{
 
   bool writeCfg();
 
+  FC_cfg* requestConfig(); //Will deprecate loadcfg() later
+
   private:
   FC_cfg current_config;
 };

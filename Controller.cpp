@@ -1,10 +1,12 @@
 #include "Controller.h"
 #include "Telemetry.h"
+#include "SerialManager.h"
 
 extern FC_cfg cfg;
 extern ConfigSuite CfgMan;
 extern TelemetryManager Logger;
 extern MPU6050 mpu;
+extern SerialMgr SerialMan;
 
 FC::FC(){
 
@@ -17,7 +19,7 @@ void FC::Start(){
   while(armed){
     if(rx_raw[4] < 1600 && rx_raw[4] > 1400){writeEsc(rx_raw[2], rx_raw[2], rx_raw[2], rx_raw[2]);} // Bypass PID when SWC is pos2, for ESC signal calibration
     
-    parseCommand();
+    SerialMan.ReceiveMsg();
     MotionUpdate();
     InputTransform();
 
@@ -126,51 +128,7 @@ void FC::writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4){
 }
 
 void FC::parseCommand(){
-  uint8_t cmd;
-
-  if (Serial.available() > 0) {
-    // wait for cfg mode command
-    cmd = Serial.read();
-  } else {return;}
-
-  switch (cmd){
-    // - - - - - - - - - - - - - - - - -
-    case CFG_MODE:
-      usbmode = 1;
-      Serial.write(HANDSHAKE);
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case READ_CFG:
-      CfgMan.loadCfg();
-      CfgMan.sendCfg();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case WRITE_CFG:
-      CfgMan.receiveCfg();
-      CfgMan.writeCfg();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case ARM_TETHERED:
-      armed = 1;
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case DISARM:
-      disarm();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case RESTART_FC:
-      ESP.restart();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case TELEMETRY_START:
-      Logger.StartSerial();
-    break;
-    // - - - - - - - - - - - - - - - - -
-    case TELEMETRY_STOP:
-      Logger.StopSerial();
-    break;
-    // - - - - - - - - - - - - - - - - -
-  }
+  
 }
 
 void FC::disarm(){

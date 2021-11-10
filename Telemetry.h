@@ -8,7 +8,7 @@
 
 
 struct telemetry_frame {
-  int header = 151522;
+  int header = TMTY_HEADER;
 
   std::array<float, 3> gyro;
   std::array<float, 3> accel;

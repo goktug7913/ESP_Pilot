@@ -23,6 +23,7 @@
 #include "PID.h"
 #include "Controller.h"               //Master Flight Control Class
 #include "Telemetry.h"
+#include "SerialManager.h"
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // GLOBAL OBJECTS- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -30,6 +31,7 @@ FC FliCon;
 FC_cfg cfg;
 ConfigSuite CfgMan;
 TelemetryManager Logger;
+SerialMgr SerialMan;
 
 SPIClass* hspi = nullptr; // SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);
@@ -113,31 +115,13 @@ void loop() {
   // You should get back into the flight loop as fast as possible if fallback happens
 
   //FliCon.writeEsc(1000,1000,1000,1000);
-  FliCon.parseCommand();
+  SerialMan.ReceiveMsg();
 
   if(FliCon.rx_raw[4] == 2000){FliCon.armed = 1;}  // Arm on CH5 high
 
   //if(FliCon.usbmode){flightLoop_d();}
 
   if (FliCon.armed){FliCon.Start();} // Directly enter flight loop with debugging
-}
-// - - - - - - - - - - - - - - - - -
-void oledPrint(){
-  display.clearDisplay();
-  display.setCursor(0, 0);
-
-  display.printf("rx: %d, %d, %d", FliCon.rx_raw[0],FliCon.rx_raw[1],FliCon.rx_raw[2]);
-  display.print("\n");
-
-  display.printf("dX: %.2f, aX: %.2f",FliCon.gyro[0], FliCon.accel[0]);
-  display.print("\n");
-
-  display.printf("dY: %.2f, aY: %.2f",FliCon.gyro[1], FliCon.accel[1]);
-  display.print("\n");
-
-  display.printf("dZ: %.2f, aZ: %.2f",FliCon.gyro[2], FliCon.accel[2]);
-
-  display.display();
 }
 // - - - - - - - - - - - - - - - - -
 void coldstart(){
@@ -178,6 +162,10 @@ void coldstart(){
 
   mpu.upsideDownMounting = MPU_UPSIDEDOWN;
 
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // Should detect if reboot happened mid flight at this point and recover offsets from EEPROM
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
   Serial.println(F("Calculating offsets, do not move MPU6050"));
   mpu.calcOffsets(); // gyro and accelero
   delay(2000);
