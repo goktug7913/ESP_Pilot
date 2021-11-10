@@ -60,7 +60,6 @@ void SerialMgr::ReceiveMsg(){
       break;
       // - - - - - - - - - - - - - - - - -
       case READ_CFG:
-        //txcfg = CfgMan.requestConfig();
         SendMsg(CFG_DATA_FLAG,0,(uint8_t*)CfgMan.requestConfig());
       break;
       // - - - - - - - - - - - - - - - - -

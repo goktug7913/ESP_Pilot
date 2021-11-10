@@ -16,9 +16,10 @@ FC::FC(){
 }
 
 void FC::Start(){
+  uint8_t tCtr = 0;
   while(armed){
     if(rx_raw[4] < 1600 && rx_raw[4] > 1400){writeEsc(rx_raw[2], rx_raw[2], rx_raw[2], rx_raw[2]);} // Bypass PID when SWC is pos2, for ESC signal calibration
-    
+    tCtr++;
     SerialMan.ReceiveMsg();
     MotionUpdate();
     InputTransform();
@@ -27,13 +28,14 @@ void FC::Start(){
     pid_r =  roll_pid.Calculate( gyro[1], rx_scaled[0] );
     pid_y =   yaw_pid.Calculate( gyro[2], rx_scaled[2] );
 
-    if (pid_p > 1400){pid_p = 1400;} else if (pid_p < -1400){pid_p = -1400;}
-    if (pid_r > 1400){pid_r = 1400;} else if (pid_r < -1400){pid_r = -1400;}
+    // Brickwall PID limiter to prevent saturation
+    if (pid_p > 1800){pid_p = 1800;} else if (pid_p < -1800){pid_p = -1800;}
+    if (pid_r > 1800){pid_r = 1800;} else if (pid_r < -1800){pid_r = -1800;}
 
     OutputTransform();
     
     if (rx_raw[4] < 1250){armed = 0;}  // Disarm if CH5 low
-    if (Logger.enableserial){Logger.SerialSendFrame();} // Send telemetry over serial when activated
+    if (Logger.enableserial && tCtr == 50){Logger.SerialSendFrame(); tCtr = 0;} // Send telemetry over serial when activated
   }
 }
 
