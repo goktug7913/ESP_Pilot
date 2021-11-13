@@ -30,6 +30,7 @@ class FC{
   PID pitch_pid;
   PID roll_pid;
   PID yaw_pid;
+  //PID alt_pid;
 
   FC();
 
@@ -39,7 +40,7 @@ class FC{
   void MotionUpdate();
   void writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4);
 
-  void parseCommand();
+ 
   void disarm();
 };
 

@@ -1,6 +1,7 @@
 #include "SerialManager.h"
 #include "Controller.h"
 #include "Telemetry.h"
+#include "Config.h"
 
 extern FC FliCon;
 extern FC_cfg cfg;
@@ -8,14 +9,17 @@ extern ConfigSuite CfgMan;
 extern TelemetryManager Logger;
 
 void SerialMgr::SendMsg(uint8_t code){
+  //Overload for sending only a command code
   SendMsg(code, 0, nullptr);
 }
 
 void SerialMgr::SendMsg(uint8_t code, uint16_t opt){
+  //Overload without data
   SendMsg(code, opt, nullptr);
 }
 
 void SerialMgr::SendMsg(uint8_t code, uint16_t opt, uint8_t* data){
+  //Base message sending function
   msg_begin header;
   msg_end footer;
 
@@ -40,6 +44,7 @@ void SerialMgr::SendMsg(uint8_t code, uint16_t opt, uint8_t* data){
 }
 
 void SerialMgr::ReceiveMsg(){
+  // Starts reading serial bytes until it finds a the start of a message
   data_seek();
 }
 
@@ -98,38 +103,38 @@ void SerialMgr::data_done(){
   switch (header.cmd){
     // - - - - - - - - - - - - - - - - -
     case CFG_MODE:
-      FliCon.usbmode = 1;
-      SendMsg(HANDSHAKE);
+      FliCon.usbmode = 1; //Set USB mode
+      SendMsg(HANDSHAKE); //Send handshake
     break;
     // - - - - - - - - - - - - - - - - -
     case READ_CFG:
-      SendMsg(CFG_DATA_FLAG,0,(uint8_t*)CfgMan.requestConfig());
+      SendMsg(CFG_DATA_FLAG,0,(uint8_t*)CfgMan.getActiveCfg()); //Send config data to configurator
     break;
       // - - - - - - - - - - - - - - - - -
     case WRITE_CFG:
-      CfgMan.receiveCfg((uint8_t*)&recvdata);
-      CfgMan.writeCfg(); //Callback is inside this func
-      CfgMan.applyDraftCfg();
+      //CfgMan.receiveCfg((uint8_t*)&recvdata);
+      CfgMan.receiveCfg((uint8_t*)&recvdata); //Receive config data from configurator
+      CfgMan.setFlashCfg((FC_cfg*)&recvdata); //Callback is inside this func
     break;
     // - - - - - - - - - - - - - - - - -
     case ARM_TETHERED:
-      FliCon.armed = 1;
+      FliCon.armed = 1; //Set armed flag
     break;
     // - - - - - - - - - - - - - - - - -
     case DISARM:
-      FliCon.disarm();
+      FliCon.disarm(); //Disarm the FC
     break;
     // - - - - - - - - - - - - - - - - -
     case RESTART_FC:
-      ESP.restart();
+      ESP.restart(); //Restart the FC
     break;
     // - - - - - - - - - - - - - - - - -
     case TELEMETRY_START:
-      Logger.StartSerial();
+      Logger.StartSerial(); //Start the telemetry stream
     break;
     // - - - - - - - - - - - - - - - - -
     case TELEMETRY_STOP:
-      Logger.StopSerial();
+      Logger.StopSerial(); //Stop the telemetry stream
     break;
     // - - - - - - - - - - - - - - - - -
   }

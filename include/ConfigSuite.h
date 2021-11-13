@@ -6,20 +6,18 @@
 
 class ConfigSuite{
   public:
+
   int eeprom_size = EEPROM_SIZE;
 
-  void sendCfg();
+  FC_cfg  getFlashCfg();                //Reads the config from the flash memory
+  bool    setFlashCfg(FC_cfg* cfg);     //Writes the config to the flash memory
 
-  void applyDraftCfg();
+  void    receiveCfg(uint8_t* cfgbytes);
+  FC_cfg* getActiveCfg();               //returns current cfg (not in eeprom)
 
-  void loadCfg(); // get eeprom cfg
-
-  void receiveCfg(uint8_t* cfgbytes);
-
-  bool writeCfg();
-
-  FC_cfg* requestConfig(); //returns current cfg (not in eeprom)
+  bool    isValidCfg(FC_cfg* cfg);      //checks header
 
   private:
+
   FC_cfg current_config;
 };

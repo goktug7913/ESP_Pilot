@@ -6,9 +6,6 @@ void setup(){
   initEscDrive();
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-int counter;
-bool ledset = 0;
-
 void loop() {
   // Program should not stay in this loop for more than a second or two during flight
   // You should get back into the flight loop as fast as possible if fallback happens
