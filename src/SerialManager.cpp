@@ -112,8 +112,7 @@ void SerialMgr::data_done(){
     break;
       // - - - - - - - - - - - - - - - - -
     case WRITE_CFG:
-      //CfgMan.receiveCfg((uint8_t*)&recvdata);
-      CfgMan.receiveCfg((uint8_t*)&recvdata); //Receive config data from configurator
+      CfgMan.setCfg((uint8_t*)&recvdata); //Receive config data from configurator
       CfgMan.setFlashCfg((FC_cfg*)&recvdata); //Callback is inside this func
     break;
     // - - - - - - - - - - - - - - - - -

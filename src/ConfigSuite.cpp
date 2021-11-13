@@ -17,16 +17,14 @@ FC_cfg ConfigSuite::getFlashCfg(){
   return flashcfg;
 }
 
-void ConfigSuite::receiveCfg(uint8_t* cfgbytes){
+void ConfigSuite::setCfg(uint8_t* cfgbytes){
   memcpy(&current_config, &cfgbytes, sizeof(FC_cfg));  //Load the received config data
 }
 
 bool ConfigSuite::setFlashCfg(FC_cfg* cfg){
-  //byte w_data[sizeof(FC_cfg)];
-  //memcpy(&w_data, &current_config, sizeof(FC_cfg));
   bool status = false;
 
-  if (cfg->header == CFG_MAGIC) {
+  if (isValidCfg(cfg)) {
     for (int i = EEPROM_START_ADDR; i < sizeof(FC_cfg); i++) {EEPROM.write(i, *(uint8_t*)&cfg+i);}
     EEPROM.commit();
     //SerialMan.SendMsg(W_EEPROM_OK); //Flash write successful message
@@ -41,8 +39,17 @@ FC_cfg* ConfigSuite::getActiveCfg(){
 
 bool isValidCfg(FC_cfg* cfg) {
   bool status = false;
-  if (cfg->header == CFG_MAGIC) {
-    status = true;
-  }
+  if (cfg->header == CFG_MAGIC && cfg->footer == CFG_MAGIC2) {status = true;}
   return status;
+}
+
+FC_cfg ConfigSuite::bytetoCfg(uint8_t* cfgbytes){
+  FC_cfg cfg;
+  memcpy(&cfg, cfgbytes, sizeof(FC_cfg));
+
+  if (isValidCfg(&cfg)) {
+    return cfg;
+  } else {
+    return current_config; //Return the current config if the received config is invalid, need to check this
+  }
 }
