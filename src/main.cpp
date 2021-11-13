@@ -1,4 +1,5 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+#include <Arduino.h>
 #include "freertos/FreeRTOS.h"        //ESP32 RTOS
 #include "freertos/task.h"            //Task Scheduling
 #include "esp_log.h"
@@ -8,9 +9,10 @@
 #include "RF24.h"                     //For nRF24 communication over SPI
 // - - - - - - - - - - - - - - - - -
 #include <Wire.h>                     //I2C Bus for MPU6050, Magnetometer and OLED screen communication
-#include <MPU6050_light.h>            //For MPU6050
+#include <MPU6050_light.h>         //For MPU6050
 #include <Adafruit_SSD1306.h>         //For OLED screen
 #include <Adafruit_GFX.h>             //For OLED screen
+#include <Adafruit_I2CDevice.h>       //For OLED screen
 // - - - - - - - - - - - - - - - - -
 #include <EEPROM.h>                   //Save-Load Configurations and mid-flight recovery
 // - - - - - - - - - - - - - - - - -
@@ -54,7 +56,7 @@ static void rmt_isr_handler(void* arg){
   // bit 2: ch0_err
   // bit 3: ch1_tx_end
   // bit 4: ch1_rx_end
-  // check whether bit (channel*3 + 1) is set to identify whether that channel has changed
+  // check whether bit (channel*3 + 1) is set to identify if that channel has changed
 
   uint8_t i;
   for(i = 0; i < pwm_ch_amt; i++) {
@@ -102,27 +104,6 @@ void rmt_init() {
 
     rmt_isr_register(rmt_isr_handler, NULL, 0, NULL);
 }
-void setup(){
-coldstart();
-initEscDrive();
-}
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-int counter;
-bool ledset = 0;
-
-void loop() {
-  // Program should not stay in this loop for more than a second or two during flight
-  // You should get back into the flight loop as fast as possible if fallback happens
-
-  //FliCon.writeEsc(1000,1000,1000,1000);
-  SerialMan.ReceiveMsg();
-
-  if(FliCon.rx_raw[4] == 2000){FliCon.armed = 1;}  // Arm on CH5 high
-
-  //if(FliCon.usbmode){flightLoop_d();}
-
-  if (FliCon.armed){FliCon.Start();} // Directly enter flight loop with debugging
-}
 // - - - - - - - - - - - - - - - - -
 void coldstart(){
   Serial.begin(115200);
@@ -131,7 +112,7 @@ void coldstart(){
   Wire.begin(-1, -1, 600000);
   
   EEPROM.begin(EEPROM_SIZE);
-  CfgMan.loadCfg();
+  //CfgMan.loadCfg();
   CfgMan.applyDraftCfg();
 
   rmt_init();
@@ -153,14 +134,14 @@ void coldstart(){
   if (!radio.begin(hspi)) {
     Serial.println(F("radio hardware is not responding!!"));
     display.println(F("radio hardware is not responding!!"));
-    for(;;); // Don't proceed, loop forever
+    for(;;); // Don't proceed if nRF24 fail
   }*/
 
   byte status = mpu.begin();
   Serial.print(F("MPU6050 status: "));
   Serial.print(F(status));
 
-  mpu.upsideDownMounting = MPU_UPSIDEDOWN;
+  //mpu.upsideDownMounting = MPU_UPSIDEDOWN;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // Should detect if reboot happened mid flight at this point and recover offsets from EEPROM
@@ -168,7 +149,7 @@ void coldstart(){
   
   Serial.println(F("Calculating offsets, do not move MPU6050"));
   mpu.calcOffsets(); // gyro and accelero
-  delay(2000);
+  delay(1500);
   Serial.println("Done!\n");
 
   radioNumber = 1 == 1;
@@ -197,13 +178,6 @@ void initEscDrive(){
   mcpwm_init(MCPWM_UNIT_1, MCPWM_TIMER_1, &pwm_config); //Init ESC 3 & 4 Controller
 }
 // - - - - - - - - - - - - - - - - -
-void EmergencyAutoDescent(){}
-// - - - - - - - - - - - - - - - - -
-void TryHovering(){}
-// - - - - - - - - - - - - - - - - -
-void Fail(){}
-// - - - - - - - - - - - - - - - - -
-// - - - - - - - - - - - - - - - - -
 /*void Receive(){
   uint8_t pipe;
   if (radio.available(&pipe)) { // is there a payload? get the pipe number that recieved it
@@ -230,3 +204,25 @@ void Fail(){}
 
   radio.startListening(); // put radio in RX mode
 }*/
+
+void setup(){
+coldstart();
+initEscDrive();
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+int counter;
+bool ledset = 0;
+
+void loop() {
+  // Program should not stay in this loop for more than a second or two during flight
+  // You should get back into the flight loop as fast as possible if fallback happens
+
+  //FliCon.writeEsc(1000,1000,1000,1000);
+  SerialMan.ReceiveMsg();
+
+  if(FliCon.rx_raw[4] == 2000){FliCon.armed = 1;}  // Arm on CH5 high
+
+  //if(FliCon.usbmode){flightLoop_d();}
+
+  if (FliCon.armed){FliCon.Start();} // Directly enter flight loop with debugging
+}
