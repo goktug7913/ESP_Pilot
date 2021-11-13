@@ -24,6 +24,10 @@ class SerialMgr{
   dState state = seek;
 
   FC_cfg txcfg;
+
+  void data_seek();
+  void data_read();
+  void data_done();
 };
 
 #endif // SERIALMGR_H
