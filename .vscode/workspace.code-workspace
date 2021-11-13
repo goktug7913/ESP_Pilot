@@ -1,4 +1,9 @@
 {
-	"folders": [],
+	"folders": [
+		{
+			"name": "ESP_Pilot",
+			"path": ".."
+		}
+	],
 	"settings": {}
 }
