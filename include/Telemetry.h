@@ -5,8 +5,6 @@
 #include "Config.h"
 #pragma once
 
-
-
 struct telemetry_frame {
   // Telemetry frame header is 16 bytes to reduce overhead
   uint16_t header = TMTY_HEADER;
@@ -18,6 +16,8 @@ struct telemetry_frame {
   // We will use a fixed array of 6 elements to send axis data for now
   // TODO: Add support for arbitrary number of axes and digital inputs
   std::array<uint16_t, 6> rx_raw;
+
+  float temperature, baro_alt, radar_alt;
 
   float pid_p, pid_r, pid_y; // PID values
   int esc1_out, esc2_out, esc3_out, esc4_out; // ESC output values

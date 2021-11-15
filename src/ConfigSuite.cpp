@@ -37,7 +37,7 @@ FC_cfg* ConfigSuite::getActiveCfg(){
   return &current_config;
 }
 
-bool isValidCfg(FC_cfg* cfg) {
+bool ConfigSuite::isValidCfg(FC_cfg* cfg) {
   bool status = false;
   if (cfg->header == CFG_MAGIC && cfg->footer == CFG_MAGIC2) {status = true;}
   return status;

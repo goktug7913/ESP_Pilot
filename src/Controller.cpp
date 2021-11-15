@@ -19,7 +19,7 @@ void FC::Start(){ //
   yaw_pid = PID(CfgMan.getActiveCfg()->Kp_yaw, CfgMan.getActiveCfg()->Ki_yaw, CfgMan.getActiveCfg()->Kd_yaw);
   //alt_pid = PID(CfgMan.getActiveCfg()->Kp_alt, CfgMan.getActiveCfg()->Ki_alt, CfgMan.getActiveCfg()->Kd_alt);
   
-  uint8_t tCtr = 0; // Counter for the telemetry
+  uint8_t tCtr = 0; // Counter for the telemetry (will be deprecated after implementing tasks) 
 
   while(armed){ // Loop while armed
     if(rx_raw[4] < 1600 && rx_raw[4] > 1400){writeEsc(rx_raw[2], rx_raw[2], rx_raw[2], rx_raw[2]);} // Bypass PID when SWC is pos2, for ESC signal calibration

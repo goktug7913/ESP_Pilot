@@ -54,14 +54,17 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //PWM RC Detection RMT Perhiperal Parameters
 
+// We will use a fixed array of 6 for axis data for now
+// TODO: Add support for arbitrary number of axes and digital inputs
+
 #define RMT_TICK_PER_US   1             //determines how many clock cycles one "tick" is, [1..255] source is generally 80MHz APB clk
 #define RMT_RX_MAX_US     3500          //time before receiver goes idle (longer pulses will be ignored)
-#define PWM_CHANNELS_NUM  5             //Receiver PWM Channel Number
-#define PWM_CHANNELS      1,2,3,4,5//,6 // Change the channels according to the number of channels
+#define PWM_CHANNELS_NUM  6             //Receiver PWM Channel Number
+#define PWM_CHANNELS      1,2,3,4,5,6   // Change the channels according to the number of channels
 
-#define RECEIVER_GPIO     35,34,39,36,27//,14
+#define RECEIVER_GPIO     35,34,39,36,27,14
 #define PWM_CENTER        1500          //Center of receiver PWM pulse
-#define RX_DEADZONE       0             //Deadzone for receiver PWM pulse
+#define RX_DEADZONE       2             //Deadzone for receiver PWM pulse
 #define RMT_RX_CLK_DIV    (80000000/RMT_TICK_PER_US/1000000) //Divide 80Mhz APB clk by 1Mhz to get the clock for the receiver
 
 //ch1 yaw
