@@ -18,12 +18,12 @@ class SerialMgr{
 
   uint8_t bx = 0;
   uint8_t rxlen = 0;
-  uint8_t recvbytes[256];
-  uint8_t recvdata[256];
-  uint8_t inb;
-  dState state = seek;
+  uint8_t recvbytes[256];   //Receive byte Buffer
+  uint8_t recvdata[256];    //data bytes
+  uint8_t inb;              //input buffer
+  dState state = seek;      //State machine state
 
-  FC_cfg txcfg;
+  FC_cfg txcfg;             //Config to be sent
 
   void data_seek();
   void data_read();

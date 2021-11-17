@@ -39,7 +39,7 @@ void FC::Start(){ //
     OutputTransform(); // Transform the output to the ESCs
     
     if (rx_raw[4] < 1250){armed = 0;}  // Disarm if CH5 low
-    if (Logger.enableserial && tCtr == 35){Logger.SerialSendFrame(); tCtr = 0;} // Send telemetry over serial when activated
+    if (Logger.enableserial && tCtr == 150){Logger.SerialSendFrame(); tCtr = 0;} // Send telemetry over serial when activated
   }
 }
 
