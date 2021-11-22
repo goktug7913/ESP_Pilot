@@ -45,4 +45,15 @@ void TelemetryManager::SaveFrame(){
   current_frame.esc3_out = FliCon.esc3_out;
   current_frame.esc4_out = FliCon.esc4_out;
 
+  current_frame.p_p = FliCon.pitch_pid.p;
+  current_frame.p_i = FliCon.pitch_pid.i;
+  current_frame.p_d = FliCon.pitch_pid.d;
+
+  current_frame.r_p = FliCon.roll_pid.p;
+  current_frame.r_i = FliCon.roll_pid.i;
+  current_frame.r_d = FliCon.roll_pid.d;
+
+  current_frame.y_p = FliCon.yaw_pid.p;
+  current_frame.y_i = FliCon.yaw_pid.i;
+  current_frame.y_d = FliCon.yaw_pid.d;
 }

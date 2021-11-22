@@ -15,11 +15,14 @@ PID::PID(float p_gain, float i_gain, float d_gain) {
 
 float PID::Calculate(float pv, float target, float dt) {
 	dT = dt;
+	
 	p = target - pv;
+
+	p_prev = p;
+
 	i += p * dT;
 	d = (p - p_prev) / dT;
 	
-	p_prev = p;
   
   if (i>iMax){i = iMax;}
   if (i<iMin){i = iMin;}

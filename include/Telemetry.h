@@ -19,8 +19,9 @@ struct telemetry_frame {
 
   float temperature, baro_alt, radar_alt;
   float deltaT;
-  
+
   float pid_p, pid_r, pid_y; // PID values
+  float p_p, p_i, p_d, r_p, r_i, r_d, y_p, y_i, y_d; // PID terms
   int esc1_out, esc2_out, esc3_out, esc4_out; // ESC output values
 
 };
