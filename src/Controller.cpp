@@ -17,29 +17,33 @@ void FC::Start(){ //
   pitch_pid = PID(CfgMan.getActiveCfg()->Kp_pitch, CfgMan.getActiveCfg()->Ki_pitch, CfgMan.getActiveCfg()->Kd_pitch);
   roll_pid = PID(CfgMan.getActiveCfg()->Kp_roll, CfgMan.getActiveCfg()->Ki_roll, CfgMan.getActiveCfg()->Kd_roll);
   yaw_pid = PID(CfgMan.getActiveCfg()->Kp_yaw, CfgMan.getActiveCfg()->Ki_yaw, CfgMan.getActiveCfg()->Kd_yaw);
+  
+  // TODO: altitude hold
   //alt_pid = PID(CfgMan.getActiveCfg()->Kp_alt, CfgMan.getActiveCfg()->Ki_alt, CfgMan.getActiveCfg()->Kd_alt);
   
   uint8_t tCtr = 0; // Counter for the telemetry (will be deprecated after implementing tasks) 
 
   while(armed){ // Loop while armed
+    float t1 = esp_timer_get_time(); // Get current time (microseconds)
     if(rx_raw[4] < 1600 && rx_raw[4] > 1400){writeEsc(rx_raw[2], rx_raw[2], rx_raw[2], rx_raw[2]);} // Bypass PID when SWC is pos2, for ESC signal calibration
     tCtr++;
     SerialMan.ReceiveMsg(); // Receive serial data
     MotionUpdate(); // Update motion data
     InputTransform(); // Transform input data
 
-    pid_p = pitch_pid.Calculate( gyro[0], rx_scaled[1] ); // Calculate pitch PID output
-    pid_r =  roll_pid.Calculate( gyro[1], rx_scaled[0] ); // Calculate roll PID output
-    pid_y =   yaw_pid.Calculate( gyro[2], rx_scaled[2] ); // Calculate yaw PID output
-
+    pid_p = pitch_pid.Calculate( gyro[0], rx_scaled[1], dt); // Calculate pitch PID output
+    pid_r =  roll_pid.Calculate( gyro[1], rx_scaled[0], dt ); // Calculate roll PID output
+    pid_y =   yaw_pid.Calculate( gyro[2], rx_scaled[2], dt ); // Calculate yaw PID output
     // Brickwall PID limiter to prevent saturation
     if (pid_p > 1800){pid_p = 1800;} else if (pid_p < -1800){pid_p = -1800;} // Pitch
     if (pid_r > 1800){pid_r = 1800;} else if (pid_r < -1800){pid_r = -1800;} // Roll
+    if (pid_y > 1800){pid_y = 1800;} else if (pid_y < -1800){pid_y = -1800;} // Yaw
 
     OutputTransform(); // Transform the output to the ESCs
     
     if (rx_raw[4] < 1250){armed = 0;}  // Disarm if CH5 low
-    if (Logger.enableserial && tCtr == 150){Logger.SerialSendFrame(); tCtr = 0;} // Send telemetry over serial when activated
+    dt = (esp_timer_get_time() - t1)/1000; // Calculate time difference (milliseconds)
+    if (Logger.enableserial && tCtr == 25){Logger.SerialSendFrame(); tCtr = 0;} // Send telemetry over serial when activated
   }
 }
 
@@ -74,10 +78,10 @@ void FC::InputTransform(){
   //The rate of change varies by execution speed, that needs to be fixed.
 
   if (rx_raw[0] >= PWM_CENTER+CfgMan.getActiveCfg()->rx_deadzone){ // Yaw Stick Right
-    rx_scaled[2] += map( rx_raw[0],  PWM_CENTER,  2000,  0,  CfgMan.getActiveCfg()->max_angle )/100; // Reduced speed by dividing
+    rx_scaled[2] += map( rx_raw[0],  PWM_CENTER,  2000,  0,  CfgMan.getActiveCfg()->max_angle )/20; // Reduced speed by dividing
   }
   else if (rx_raw[0] < PWM_CENTER-CfgMan.getActiveCfg()->rx_deadzone){ // Yaw Stick Left
-    rx_scaled[2] -= map( rx_raw[0],  PWM_CENTER,  1000,  0,  CfgMan.getActiveCfg()->max_angle )/100; // Reduced speed by dividing
+    rx_scaled[2] -= map( rx_raw[0],  PWM_CENTER,  1000,  0,  CfgMan.getActiveCfg()->max_angle )/20; // Reduced speed by dividing
   }
 }
 

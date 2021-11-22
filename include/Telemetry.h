@@ -18,7 +18,8 @@ struct telemetry_frame {
   std::array<uint16_t, 6> rx_raw;
 
   float temperature, baro_alt, radar_alt;
-
+  float deltaT;
+  
   float pid_p, pid_r, pid_y; // PID values
   int esc1_out, esc2_out, esc3_out, esc4_out; // ESC output values
 

@@ -34,6 +34,8 @@ void TelemetryManager::SaveFrame(){
   current_frame.rx_scaled = FliCon.rx_scaled;
   current_frame.rx_raw = FliCon.rx_raw;
 
+  current_frame.deltaT = FliCon.dt;
+
   current_frame.pid_p = FliCon.pid_p;
   current_frame.pid_r = FliCon.pid_r;
   current_frame.pid_y = FliCon.pid_y;

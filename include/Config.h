@@ -11,17 +11,17 @@ struct FC_cfg{
   uint32_t          header = CFG_MAGIC;                         // Magic number to identify config data
 
   //Control
-  float             Kp_pitch = 1.6;                             // Proportional gain for pitch
-  float             Ki_pitch = 0.006;                           // Integral gain for pitch
-  float             Kd_pitch = 8;                               // Derivative gain for pitch
+  float             Kp_pitch = 3;                               // Proportional gain for pitch
+  float             Ki_pitch = 0.003;                           // Integral gain for pitch
+  float             Kd_pitch = 0.25;                               // Derivative gain for pitch
 
-  float             Kp_roll = 1.6;                              // Proportional gain for roll
-  float             Ki_roll = 0.006;                            // Integral gain for roll
-  float             Kd_roll = 8;                                // Derivative gain for roll
+  float             Kp_roll = 3;                                // Proportional gain for roll
+  float             Ki_roll = 0.003;                            // Integral gain for roll
+  float             Kd_roll = 0.25;                                // Derivative gain for roll
 
-  float             Kp_yaw = 1.6;                               // Proportional gain for yaw
-  float             Ki_yaw = 0.006;                             // Integral gain for yaw
-  float             Kd_yaw = 8;                                 // Derivative gain for yaw
+  float             Kp_yaw = 3;                                 // Proportional gain for yaw
+  float             Ki_yaw = 0.003;                             // Integral gain for yaw
+  float             Kd_yaw = 0.25;                                 // Derivative gain for yaw
 
   uint8_t           esc_pwm_hz = PWM_FREQ;                      // ESC PWM frequency in Hz
   uint8_t           max_angle = 14;                             // Max angle in degrees

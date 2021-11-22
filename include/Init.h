@@ -157,6 +157,8 @@ void coldstart(){
 
   radioNumber = 1 == 1;
   //radioSetup();
+
+  SerialMan.SendMsg(SERIALPOLL);
 }
 // - - - - - - - - - - - - - - - - -
 void TempUpdate(){ //Update temperature

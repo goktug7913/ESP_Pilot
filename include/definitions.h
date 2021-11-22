@@ -7,7 +7,7 @@
 
 #define MPU_UPSIDEDOWN     1          //Enable if MPU chip faces downward (default is facing up)
 
-#define PWM_FREQ           250        //ESC Control signal, Default: 50Hz
+#define PWM_FREQ           50        //ESC Control signal, Default: 50Hz
 #define PWM_MIN_DUTY       1000       //ESC Minimum Pulse Width (us)
 #define PWM_MAX_DUTY       2000       //ESC Maximum Pulse Width (us)
 #define ESC_1              26         //PWM0A Pin
@@ -46,6 +46,7 @@
 
 //ESP Callbacks
 #define HANDSHAKE         58    //Serial connected
+#define SERIALPOLL        48    //ESP32 Polling for serial connection
 #define CFG_DATA_FLAG     59    //Indicate data is outbound
 #define TMTY_DATA_FLAG    60    //Indicate telemetry frame is outbound
 #define W_EEPROM_OK       61    //New configuration flashed succesfully

@@ -26,6 +26,9 @@ class FC{
   bool armed = 0;
   bool recovery = 0;
   bool usbmode = 0;
+  bool alt_hold = 0;
+  bool gps_hold = 0;
+  float dt;
 
   PID pitch_pid;
   PID roll_pid;

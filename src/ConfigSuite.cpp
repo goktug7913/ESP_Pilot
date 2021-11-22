@@ -27,7 +27,9 @@ bool ConfigSuite::setFlashCfg(FC_cfg* cfg){
   if (isValidCfg(cfg)) {
     for (int i = EEPROM_START_ADDR; i < sizeof(FC_cfg); i++) {EEPROM.write(i, *(uint8_t*)&cfg+i);}
     EEPROM.commit();
-    //SerialMan.SendMsg(W_EEPROM_OK); //Flash write successful message
+    SerialMan.SendMsg(W_EEPROM_OK); //Flash write successful message
+  } else {
+    SerialMan.SendMsg(W_EEPROM_ERR); //Flash write failed message
   }
 
   return status;
