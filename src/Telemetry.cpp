@@ -24,7 +24,6 @@ void TelemetryManager::StopSerial(){
 void TelemetryManager::SerialSendFrame(){
   SaveFrame();
   SerialMan.SendMsg(TMTY_DATA_FLAG,0,(uint8_t*)&current_frame);
-  //Serial.write((byte*)&current_frame, sizeof(telemetry_frame));
 }
 
 void TelemetryManager::SaveFrame(){

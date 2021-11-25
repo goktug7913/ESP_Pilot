@@ -23,16 +23,17 @@ void ConfigSuite::setCfg(uint8_t* cfgbytes){
 
 bool ConfigSuite::setFlashCfg(FC_cfg* cfg){
   bool status = false;
+  status = isValidCfg(cfg);
 
-  if (isValidCfg(cfg)) {
+  if (status) {
     for (int i = EEPROM_START_ADDR; i < sizeof(FC_cfg); i++) {EEPROM.write(i, *(uint8_t*)&cfg+i);}
     EEPROM.commit();
     SerialMan.SendMsg(W_EEPROM_OK); //Flash write successful message
   } else {
-    SerialMan.SendMsg(W_EEPROM_ERR); //Flash write failed message
+    SerialMan.SendMsg(S_EEPROM_ERR); //Config data is invalid
   }
 
-  return status;
+  return status; //Future use
 }
 
 FC_cfg* ConfigSuite::getActiveCfg(){

@@ -18,16 +18,16 @@ float PID::Calculate(float pv, float target, float dt) {
 	
 	p = target - pv;
 
-	p_prev = p;
 
-	i += p * dT;
+	if(p > ITERMDEADBAND || p < ITERMDEADBAND){ //some deadband
+		i += (p * iScalar * dT);
+	}
+
 	d = (p - p_prev) / dT;
-	
   
-  if (i>iMax){i = iMax;}
-  if (i<iMin){i = iMin;}
-
-  //TODO: add some deadzone to integral term to prevent oscillations and windup
+  	if (i>iMax){i = iMax;}
+  	if (i<iMin){i = iMin;}
+	p_prev = p;
 
 	return (Kp * p) + (Ki * i) + (Kd * d);
 } 

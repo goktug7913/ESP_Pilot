@@ -20,8 +20,9 @@ class PID {
   float Kp, Ki, Kd;   //PID Gains
   float p, i, d;      //Error values
   float p_prev;       //Previous P Term
-  float dT = 0;       //Delta time in millisecs
-
-  float iMax =  35000;
-  float iMin = -35000;
+  float dT;       //Delta time in millisecs
+  
+  float iScalar = ITERMSCALAR;
+  float iMax =  ITERMLIMIT;
+  float iMin = -ITERMLIMIT;
 };

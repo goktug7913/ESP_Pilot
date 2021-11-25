@@ -22,27 +22,31 @@ void FC::Start(){ //
   //alt_pid = PID(CfgMan.getActiveCfg()->Kp_alt, CfgMan.getActiveCfg()->Ki_alt, CfgMan.getActiveCfg()->Kd_alt);
   
   uint8_t tCtr = 0; // Counter for the telemetry (will be deprecated after implementing tasks) 
+  t1 = esp_timer_get_time(); // Prevent dT = 0
 
   while(armed){ // Loop while armed
-    float t1 = esp_timer_get_time(); // Get current time (microseconds)
     if(rx_raw[4] < 1600 && rx_raw[4] > 1400){writeEsc(rx_raw[2], rx_raw[2], rx_raw[2], rx_raw[2]);} // Bypass PID when SWC is pos2, for ESC signal calibration
     tCtr++;
     SerialMan.ReceiveMsg(); // Receive serial data
     MotionUpdate(); // Update motion data
     InputTransform(); // Transform input data
 
-    pid_p = pitch_pid.Calculate( gyro[0], rx_scaled[1], dt); // Calculate pitch PID output
-    pid_r =  roll_pid.Calculate( gyro[1], rx_scaled[0], dt ); // Calculate roll PID output
-    pid_y =   yaw_pid.Calculate( gyro[2], rx_scaled[2], dt ); // Calculate yaw PID output
+    dt = (esp_timer_get_time() - t1)/1000; // Calculate time difference (milliseconds)
+
+    pid_p = pitch_pid.Calculate( gyro[0], rx_scaled[1], dt)*PIDMASTERGAIN;  // Calculate pitch PID output
+    pid_r =  roll_pid.Calculate( gyro[1], rx_scaled[0], dt )*PIDMASTERGAIN; // Calculate roll PID output
+    pid_y =   yaw_pid.Calculate( gyro[2], rx_scaled[2], dt )*PIDMASTERGAIN; // Calculate yaw PID output
+
+    t1 = esp_timer_get_time(); // Get current time (microseconds)
+
     // Brickwall PID limiter to prevent saturation
-    if (pid_p > 1800){pid_p = 1800;} else if (pid_p < -1800){pid_p = -1800;} // Pitch
-    if (pid_r > 1800){pid_r = 1800;} else if (pid_r < -1800){pid_r = -1800;} // Roll
-    if (pid_y > 1800){pid_y = 1800;} else if (pid_y < -1800){pid_y = -1800;} // Yaw
+    if (pid_p > PIDLIMIT){pid_p = PIDLIMIT;} else if (pid_p < -PIDLIMIT){pid_p = -PIDLIMIT;} // Pitch
+    if (pid_r > PIDLIMIT){pid_r = PIDLIMIT;} else if (pid_r < -PIDLIMIT){pid_r = -PIDLIMIT;} // Roll
+    if (pid_y > PIDLIMIT){pid_y = PIDLIMIT;} else if (pid_y < -PIDLIMIT){pid_y = -PIDLIMIT;} // Yaw
 
     OutputTransform(); // Transform the output to the ESCs
     
-    if (rx_raw[4] < 1250){armed = 0;}  // Disarm if CH5 low
-    dt = (esp_timer_get_time() - t1)/1000; // Calculate time difference (milliseconds)
+    if (rx_raw[4] < 1250){armed = 0; disarm();}  // Disarm if CH5 low
     if (Logger.enableserial && tCtr == 25){Logger.SerialSendFrame(); tCtr = 0;} // Send telemetry over serial when activated
   }
 }
@@ -52,19 +56,25 @@ void FC::InputTransform(){
   // MAP ROLL SIGNAL TO DEGREE TARGET
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   if (rx_raw[3] >= PWM_CENTER+CfgMan.getActiveCfg()->rx_deadzone){ // Stick Right
-    rx_scaled[0] = map( rx_raw[3],  PWM_CENTER,  2000,  0,  CfgMan.getActiveCfg()->max_angle ); 
+    rx_scaled[0] = map( rx_raw[3],  PWM_CENTER,  2000,  0,  10*CfgMan.getActiveCfg()->max_angle )/10; // To float with .1 precision
   }
   else if (rx_raw[3] < PWM_CENTER-CfgMan.getActiveCfg()->rx_deadzone){ // Stick Left
-    rx_scaled[0] = 0-map( rx_raw[3],  PWM_CENTER,  1000,  0,  CfgMan.getActiveCfg()->max_angle );
+    rx_scaled[0] = 0-map( rx_raw[3],  PWM_CENTER,  1000, 0, 10*CfgMan.getActiveCfg()->max_angle )/10; // To float with .1 precision
+  }
+  else { // Stick Centered, this is added to fix a bug where the stick is centered but the value is not 0
+    rx_scaled[0] = 0;
   }
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   // MAP PITCH SIGNAL TO DEGREE TARGET
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   if (rx_raw[1] >= PWM_CENTER+CfgMan.getActiveCfg()->rx_deadzone){ // Stick Up
-    rx_scaled[1] = map( rx_raw[1],  PWM_CENTER,  2000,  0,  CfgMan.getActiveCfg()->max_angle );
+    rx_scaled[1] = map( rx_raw[1],  PWM_CENTER,  2000, 0, 10*CfgMan.getActiveCfg()->max_angle )/10; // To float with .1 precision
   }
   else if (rx_raw[1] < PWM_CENTER-CfgMan.getActiveCfg()->rx_deadzone){ // Stick Down
-    rx_scaled[1] = 0-map( rx_raw[1],  PWM_CENTER,  1000,  0,  CfgMan.getActiveCfg()->max_angle );
+    rx_scaled[1] = 0-map( rx_raw[1],  PWM_CENTER,  1000,  0,  10*CfgMan.getActiveCfg()->max_angle )/10; // To float with .1 precision
+  }
+  else { // Stick Centered, this is added to fix a bug where the stick is centered but the value is not 0
+    rx_scaled[1] = 0;
   }
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // MAP YAW SIGNAL TO DEGREE TARGET
@@ -78,11 +88,12 @@ void FC::InputTransform(){
   //The rate of change varies by execution speed, that needs to be fixed.
 
   if (rx_raw[0] >= PWM_CENTER+CfgMan.getActiveCfg()->rx_deadzone){ // Yaw Stick Right
-    rx_scaled[2] += map( rx_raw[0],  PWM_CENTER,  2000,  0,  CfgMan.getActiveCfg()->max_angle )/20; // Reduced speed by dividing
+    rx_scaled[2] += rx_raw[0]/1000; // To float with .1 precision
   }
   else if (rx_raw[0] < PWM_CENTER-CfgMan.getActiveCfg()->rx_deadzone){ // Yaw Stick Left
-    rx_scaled[2] -= map( rx_raw[0],  PWM_CENTER,  1000,  0,  CfgMan.getActiveCfg()->max_angle )/20; // Reduced speed by dividing
+    rx_scaled[2] -= rx_raw[0]/1000; // To float with .1 precision
   }
+
 }
 
 void FC::OutputTransform(){
@@ -107,6 +118,15 @@ void FC::OutputTransform(){
     esc4_out += pid_p;  esc2_out -= pid_p;
   }
 
+  // Calculate Yaw PWM
+  if (pid_y < 0){ // Negative Yaw
+    esc1_out += pid_y;  esc3_out -= pid_y;
+    esc2_out -= pid_y;  esc4_out += pid_y;
+  } else { // Positive Yaw
+    esc3_out -= pid_y;  esc1_out += pid_y;
+    esc4_out += pid_y;  esc2_out -= pid_y;
+  }
+
   // Add Throttles
   esc1_out += rx_raw[2]; esc2_out += rx_raw[2]; esc3_out += rx_raw[2]; esc4_out += rx_raw[2];
 
@@ -120,14 +140,14 @@ void FC::OutputTransform(){
 }
 
 void FC::MotionUpdate(){
-  mpu.update(); 
+  mpu.update(); // Not sure if necessary
   gyro[0]     = mpu.getAngleX(); // Roll
   gyro[1]     = mpu.getAngleY(); // Pitch
   gyro[2]     = mpu.getAngleZ(); // Yaw
 
-  accel[0]    = mpu.getAccX(); 
-  accel[1]    = mpu.getAccY();
-  accel[2]    = mpu.getAccZ();
+  //accel[0]    = mpu.getAccX(); 
+  //accel[1]    = mpu.getAccY();
+  //accel[2]    = mpu.getAccZ();
 }
 
 void FC::writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4){
@@ -140,6 +160,6 @@ void FC::writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4){
 void FC::disarm(){
   for(int i = 0; i<200;i++){ // Force rotor stop? weird bug!!
   if(i==0){armed = 0;} 
-  writeEsc(0,0,0,0);
+  writeEsc(1000,1000,1000,1000);
   }
 }

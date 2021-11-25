@@ -29,7 +29,8 @@ class FC{
   bool alt_hold = 0;
   bool gps_hold = 0;
   float dt;
-
+  float t1;
+  
   PID pitch_pid;
   PID roll_pid;
   PID yaw_pid;

@@ -7,7 +7,7 @@
 
 #define MPU_UPSIDEDOWN     1          //Enable if MPU chip faces downward (default is facing up)
 
-#define PWM_FREQ           50        //ESC Control signal, Default: 50Hz
+#define PWM_FREQ           250        //ESC Control signal, Default: 50Hz
 #define PWM_MIN_DUTY       1000       //ESC Minimum Pulse Width (us)
 #define PWM_MAX_DUTY       2000       //ESC Maximum Pulse Width (us)
 #define ESC_1              26         //PWM0A Pin
@@ -15,21 +15,27 @@
 #define ESC_3              33         //PWM1A Pin
 #define ESC_4              32         //PWM1B Pin
 
+#define ITERMSCALAR        6         //Integral term scalar (TESTING)
+#define ITERMLIMIT         2000       //Integral term limit (TESTING)
+#define ITERMDEADBAND      0.5        //Integral term deadband degrees (TESTING)
+#define PIDLIMIT           250        //PID PWM output limit (TESTING)
+#define PIDMASTERGAIN      1.0        //PID master gain (TESTING)
+
 #define RF24_CE            2          //nRF24 CE Pin
 #define RF24_CSN           0          //nRF24 CSN Pin
 #define RF24_FREQ          1000000    //nRF24 SPI Speed
 
-#define CFG_MAGIC          0xDEADBEEF //Config Struct Header
-#define CFG_MAGIC2         0xFEEBDAED //Config Struct Footer
-#define TMTY_HEADER        0x533D     //Telemetry Frame Header
+#define CFG_MAGIC          0xDEADBEEF //Config Struct Header (32 bits)
+#define CFG_MAGIC2         0xFEEBDAED //Config Struct Footer (32 bits)
+#define TMTY_HEADER        0x533D     //Telemetry Frame Header (16 bits)
 
-#define MSG_START          0xB1       //Message Start Flag
-#define DATA_START         0xD2       //Data Start Flag
-#define MSG_END            0xB2       //Message End Flag
-#define DATA_END           0xD1       //Data End Flag
+#define MSG_START          0xB1       //Message Start Flag (8 bits)
+#define DATA_START         0xD2       //Data Start Flag (8 bits)
+#define MSG_END            0xB2       //Message End Flag (8 bits)
+#define DATA_END           0xD1       //Data End Flag (8 bits)
 
 #define EEPROM_START_ADDR  0          //EEPROM Data start address
-#define EEPROM_SIZE        512        //EEPROM Allocated Size in Bytes (512 Max)
+#define EEPROM_SIZE        512        //EEPROM Allocated Size in Bytes (512 bytes max)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ------------------- SYNC ANY CHANGES WITH ESP_CONFIGURATOR APP CODE ---------------------
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,6 +57,7 @@
 #define TMTY_DATA_FLAG    60    //Indicate telemetry frame is outbound
 #define W_EEPROM_OK       61    //New configuration flashed succesfully
 #define W_EEPROM_ERR      62    //New configuration flash failed
+#define S_EEPROM_ERR      63    //New configuration data is invalid
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //PWM RC Detection RMT Perhiperal Parameters
