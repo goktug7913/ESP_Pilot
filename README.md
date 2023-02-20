@@ -1,6 +1,6 @@
-# ESP_Pilot
-ESP32 Flight Controller for quadcopters
+# ESP Pilot
+ESP32 based Flight Controller for multirotor aircraft
 
-Libraries are not included right now, this won't probably build.
+I'm using Arduino libraries which are not included in this repository, so the project does not build OOB right now.
 
-Documentation will be here soon!
+Documentation about configuration and details will be here, presumably not very soon as I'm the only maintainer :)
