@@ -17,6 +17,22 @@ Another reason why the ESP32 is a great choice for a flight controller is its af
 
 Overall, the ESP32's processing power, built-in connectivity options, and affordability make it a compelling choice for a flight controller.
 
+# Development Hardware
+- NodeMCU-32S
+- MPU6050
+- F450 Frame
+- 4x 30A XXD HW30A PWM ESC's
+- 4x Racerstar 2212 BR2212 980KV 2S-4S Brushless Motors
+- 4x 1045 Propellers
+- 300W 12V Power Supply (Tuned to 11.1V with trimpot on the power supply)
+- Flysky FS-IA6 Receiver
+- Flysky FS-I6 Transmitter
+- 1000uF capacitor on ESP's power rail
+- Good 'ol breadboard and jumper wires (Seriously, don't do this.)
+
+There is also a compass, barometer and ultrasonic sensor, but they're not used yet, so I didn't include them in the list.
+Right now, I'm using a power supply instead of batteries because batteries are expensive and I don't have any. I'm planning to use LiPo batteries in the future. The tether might be causing stability issues even though it's very light. I will hopefully change that when I can fund some batteries and a charger.
+
 # Building and flashing
 You need PlatformIO to build and upload the binary to ESP32.
 - Clone the repository
@@ -43,6 +59,8 @@ Currently supports:
 - Custom MPU6050 driver. Currently MPU6050_Light is used, but I'm not comfortable with it. I'm planning to write my own driver which will be more configurable and use quaternions instead of Euler angles.
 - AP mode and web configurator
 - Bluetooth configurator (I don't see a benefit of this, but I might add it)
+- Autoland and minimum altitude protection support (I'm planning to use ultrasonic sensor for this)
+- Altitude measurement without GPS using barometer.
 - RC receiver support (SBUS, PPM, etc.)
 - Support for more IMU's
 - Support for more ESC's

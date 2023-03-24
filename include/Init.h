@@ -38,9 +38,10 @@ SerialMgr SerialMan;                  //Serial manager, responsible for managing
 SPIClass* hspi = nullptr;             //SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);                    //MPU6050 Class
 
-//RF24 radio(RF24_CE, RF24_CSN, RF24_FREQ); // (CE,CSN,SPI CLK)
+// Display
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// RF24 radio(RF24_CE, RF24_CSN, RF24_FREQ); // (CE,CSN,SPI CLK)
 uint8_t address[][6] = {"1Node", "2Node"};
 bool radioNumber = 1; // 0 uses address[0] to transmit, 1 uses address[1] to transmit
 bool role = false;    // true = TX role, false = RX role
