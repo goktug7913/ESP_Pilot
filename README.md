@@ -72,7 +72,4 @@ Currently supports:
 - Long range telemetry (I'm thinking of using LoRa or nRF24L01+)
 
 # Contributing
-If you want to contribute, you can open an issue or a pull request. I'll try to respond as soon as possible.
-
-# License
-The project will stay open source, but I'm not sure which license to use. Feel free to send me a message if you have any suggestions.
+If you want to contribute, you can open an issue or a pull request. I'll try to respond as soon as possible. I'm trying to keep the code as clean and commented as possible, so it should be easy to understand. If you have any questions, you can message me or open an issue. I'm also open to suggestions and feedback.
