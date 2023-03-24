@@ -70,6 +70,7 @@ Currently supports:
 - Wider range of ESP32 boards
 - Logging to SD card
 - Long range telemetry (I'm thinking of using LoRa or nRF24L01+)
+- Tool for pre-build configuration, building and flashing in an easy way. (I'm thinking of using Python for this, as ESP-IDF uses Python already.)
 
 # Contributing
 If you want to contribute, you can open an issue or a pull request. I'll try to respond as soon as possible. I'm trying to keep the code as clean and commented as possible, so it should be easy to understand. If you have any questions, you can message me or open an issue. I'm also open to suggestions and feedback.
