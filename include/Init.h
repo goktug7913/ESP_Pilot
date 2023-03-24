@@ -22,7 +22,7 @@
 #include "definitions.h"              //Hardcoded values and default configuration
 #include "Config.h"                   //Configuration parameters
 #include "ConfigSuite.h"              //Configuration manager, responsible for managing and verifying config
-#include "PID.h"                      //PID controller
+
 #include "Controller.h"               //Master Flight Control Class
 #include "Telemetry.h"                //Telemetry class
 #include "SerialManager.h"            //Serial Manager, responsible for managing serial communication
@@ -110,10 +110,10 @@ void coldstart(){
   //This function is called once at startup, and is responsible for initializing all hardware and objects
   //Also a reboot should be detected here, and recovery should be attempted if necessary
 
-  Serial.begin(921600); // initialize serial port
+  Serial.begin(SERIAL_BAUD); // initialize serial port
   while (!Serial) {} //Wait for serial to be ready
 
-  Wire.begin(-1, -1, 600000); //Start I2C, set speed to 600kHz
+  Wire.begin(-1, -1, 800000); //Start I2C, set speed to 800kHz
   
   EEPROM.begin(EEPROM_SIZE); 
   //CfgMan.getFlashCfg(); //Load config from flash

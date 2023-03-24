@@ -46,6 +46,7 @@ class FC{
 
  
   void disarm();
+  void setGains(float p, float i, float d);
 };
 
 #endif

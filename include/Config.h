@@ -15,16 +15,16 @@ struct FC_cfg{
   float             Ki_pitch = 0.0010;                           // Integral gain for pitch
   float             Kd_pitch = 12;                              // Derivative gain for pitch
 
-  float             Kp_roll = 2;                                // Proportional gain for roll
-  float             Ki_roll = 0.0010;                            // Integral gain for roll
-  float             Kd_roll = 12;                               // Derivative gain for roll
+  float             Kp_roll = 0.67;                                // Proportional gain for roll
+  float             Ki_roll = 0.025;                                // Integral gain for roll
+  float             Kd_roll = 1280;                               // Derivative gain for roll
 
   float             Kp_yaw = 3;                                 // Proportional gain for yaw
   float             Ki_yaw = 0.001;                             // Integral gain for yaw
   float             Kd_yaw = 0;                                 // Derivative gain for yaw
 
   uint8_t           esc_pwm_hz = PWM_FREQ;                      // ESC PWM frequency in Hz
-  uint8_t           max_angle = 2;                              // Max angle in degrees
+  uint8_t           max_angle = 15;                              // Max angle in degrees
 
   //Settings
   float             vBat = 11.1;                                // Battery max voltage

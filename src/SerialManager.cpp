@@ -136,6 +136,14 @@ void SerialMgr::data_done(){
       Logger.StopSerial(); //Stop the telemetry stream
     break;
     // - - - - - - - - - - - - - - - - -
+    case SET_PID_GAIN:     // Dev note: this is a special case, since it's not a normal message
+      float p,i,d;
+      p = *(float*)&header.opt;
+      i = *((float*)&header.opt+1);
+      d = *((float*)&header.opt+2);
+      FliCon.setGains(p,i,d);
+    break;
+    // - - - - - - - - - - - - - - - - -
   }
   state = seek;
 }

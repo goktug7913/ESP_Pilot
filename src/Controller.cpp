@@ -33,16 +33,16 @@ void FC::Start(){ //
 
     dt = (esp_timer_get_time() - t1)/1000; // Calculate time difference (milliseconds)
 
-    pid_p = pitch_pid.Calculate( gyro[0], rx_scaled[1], dt)*PIDMASTERGAIN;  // Calculate pitch PID output
+    //pid_p = pitch_pid.Calculate( gyro[0], rx_scaled[1], dt)*PIDMASTERGAIN;  // Calculate pitch PID output
     pid_r =  roll_pid.Calculate( gyro[1], rx_scaled[0], dt )*PIDMASTERGAIN; // Calculate roll PID output
-    pid_y =   yaw_pid.Calculate( gyro[2], rx_scaled[2], dt )*PIDMASTERGAIN; // Calculate yaw PID output
+    //pid_y =   yaw_pid.Calculate( gyro[2], rx_scaled[2], dt )*PIDMASTERGAIN; // Calculate yaw PID output
 
     t1 = esp_timer_get_time(); // Get current time (microseconds)
 
     // Brickwall PID limiter to prevent saturation
-    if (pid_p > PIDLIMIT){pid_p = PIDLIMIT;} else if (pid_p < -PIDLIMIT){pid_p = -PIDLIMIT;} // Pitch
-    if (pid_r > PIDLIMIT){pid_r = PIDLIMIT;} else if (pid_r < -PIDLIMIT){pid_r = -PIDLIMIT;} // Roll
-    if (pid_y > PIDLIMIT){pid_y = PIDLIMIT;} else if (pid_y < -PIDLIMIT){pid_y = -PIDLIMIT;} // Yaw
+    if (pid_p > PIDLIMIT){pid_p = PIDLIMIT;} //else if (pid_p < -PIDLIMIT){pid_p = -PIDLIMIT;} // Pitch
+    if (pid_r > PIDLIMIT){pid_r = PIDLIMIT;} //else if (pid_r < -PIDLIMIT){pid_r = -PIDLIMIT;} // Roll
+    if (pid_y > PIDLIMIT){pid_y = PIDLIMIT;} //else if (pid_y < -PIDLIMIT){pid_y = -PIDLIMIT;} // Yaw
 
     OutputTransform(); // Transform the output to the ESCs
     
@@ -136,7 +136,7 @@ void FC::OutputTransform(){
   if (esc3_out < 1000) {esc3_out = 1000;} else if(esc3_out > 2000) {esc3_out = 2000;}
   if (esc4_out < 1000) {esc4_out = 1000;} else if(esc4_out > 2000) {esc4_out = 2000;}
 
-  writeEsc(esc1_out, esc2_out, esc3_out, esc4_out); 
+  writeEsc(1000, esc2_out, 1000, esc4_out); 
 }
 
 void FC::MotionUpdate(){
@@ -162,4 +162,8 @@ void FC::disarm(){
   if(i==0){armed = 0;} 
   writeEsc(1000,1000,1000,1000);
   }
+}
+
+void FC::setGains(float p, float i, float d){
+  roll_pid.SetGains(p,i,d);
 }

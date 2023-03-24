@@ -20,14 +20,20 @@ float PID::Calculate(float pv, float target, float dt) {
 
 
 	if(p > ITERMDEADBAND || p < ITERMDEADBAND){ //some deadband
-		i += (p * iScalar * dT);
+		i += (Ki * p * iScalar * dT);
 	}
 
-	d = (p - p_prev) / dT;
+	d = Kd * ((p - p_prev) / dT);
   
   	if (i>iMax){i = iMax;}
   	if (i<iMin){i = iMin;}
 	p_prev = p;
 
-	return (Kp * p) + (Ki * i) + (Kd * d);
-} 
+	return (Kp * p) + i + (Kd * d);
+}
+
+void PID::SetGains(float p_gain, float i_gain, float d_gain){
+	Kp = p_gain;
+	Ki = i_gain;
+	Kd = d_gain;
+}
