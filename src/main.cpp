@@ -17,3 +17,11 @@ void loop() {
 
   if (FliCon.armed){FliCon.Start();} // Directly enter flight loop with debugging
 }
+
+extern "C" void app_main() {
+  // Temporary solution while migrating from Arduino to ESP-IDF
+  
+  setup();
+
+  while (1) { loop(); }
+}

@@ -1,7 +1,7 @@
 #include "definitions.h"
-#include <EEPROM.h>
+//#include <EEPROM.h>
 #include "Config.h"
-#include "Arduino.h"
+//#include "Arduino.h"
 #pragma once
 
 class ConfigSuite{

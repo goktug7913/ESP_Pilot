@@ -1,20 +1,19 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-#include <Arduino.h>                  //Arduino.h must be included first to ensure compatibility with libraries
 #include "freertos/FreeRTOS.h"        //ESP32 RTOS
 #include "freertos/task.h"            //Task Scheduling
 #include "esp_log.h"                  //ESP32 Logging
 #include "string.h"                   //Memory operation
 // - - - - - - - - - - - - - - - - -
-#include <SPI.h>                      //For nRF24 communication over SPI
-#include "RF24.h"                     //For nRF24 communication over SPI
+//#include <SPI.h>                      //For nRF24 communication over SPI
+//#include "RF24.h"                     //For nRF24 communication over SPI
 // - - - - - - - - - - - - - - - - -
-#include <Wire.h>                     //I2C Bus for MPU6050, Magnetometer and OLED screen communication
-#include <MPU6050_light.h>            //For MPU6050
-#include <Adafruit_SSD1306.h>         //For OLED screen
-#include <Adafruit_GFX.h>             //For OLED screen
-#include <Adafruit_I2CDevice.h>       //For OLED screen
+//#include <Wire.h>                     //I2C Bus for MPU6050, Magnetometer and OLED screen communication
+//#include <MPU6050_light.h>            //For MPU6050
+//#include <Adafruit_SSD1306.h>         //For OLED screen
+//#include <Adafruit_GFX.h>             //For OLED screen
+//#include <Adafruit_I2CDevice.h>       //For OLED screen
 // - - - - - - - - - - - - - - - - -
-#include <EEPROM.h>                   //Save-Load Configurations and mid-flight recovery
+//#include <EEPROM.h>                   //Save-Load Configurations and mid-flight recovery
 // - - - - - - - - - - - - - - - - -
 #include "driver/mcpwm.h"             //ESC PWM control
 #include "driver/rmt.h"               //Receiver PWM detection
