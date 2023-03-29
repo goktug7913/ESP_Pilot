@@ -1,10 +1,6 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-// DEFAULT DEFINES
-#define SCREEN_WIDTH       128        //OLED display width, in pixels
-#define SCREEN_HEIGHT      32         //OLED display height, in pixels
-
 // MPU
 #define MPU_UPSIDEDOWN     1          //Enable if MPU chip faces downward (default is facing up)
 

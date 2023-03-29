@@ -32,7 +32,6 @@ struct FC_cfg{
 
   //Aux modules
   bool              nrf24_telemetry = 0;                        // Enable nrf24 telemetry
-  bool              oled_display = 0;                           // Enable OLED display
   bool              radar_altimeter = 0;                        // Enable radar altimeter
   bool              compass = 0;                                // Enable compass
 

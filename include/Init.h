@@ -10,9 +10,6 @@
 // - - - - - - - - - - - - - - - - -
 #include <Wire.h>                     //I2C Bus for MPU6050, Magnetometer and OLED screen communication
 #include <MPU6050_light.h>            //For MPU6050
-#include <Adafruit_SSD1306.h>         //For OLED screen
-#include <Adafruit_GFX.h>             //For OLED screen
-#include <Adafruit_I2CDevice.h>       //For OLED screen
 // - - - - - - - - - - - - - - - - -
 #include <EEPROM.h>                   //Save-Load Configurations and mid-flight recovery
 // - - - - - - - - - - - - - - - - -
@@ -38,8 +35,6 @@ SerialMgr SerialMan;                  //Serial manager, responsible for managing
 SPIClass* hspi = nullptr;             //SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);                    //MPU6050 Class
 
-// Display
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // RF24 radio(RF24_CE, RF24_CSN, RF24_FREQ); // (CE,CSN,SPI CLK)
 uint8_t address[][6] = {"1Node", "2Node"};
@@ -120,17 +115,6 @@ void coldstart(){
   //CfgMan.getFlashCfg(); //Load config from flash
 
   rmt_init(); //Initialize RMT
-  
-  if (CfgMan.getActiveCfg()->oled_display){ //Initialize OLED if enabled
-    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-      Serial.println(F("SSD1306 allocation failed"));
-      for(;;); // Don't proceed, loop forever
-    }
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0, 0);
-    display.clearDisplay();
-  }
 
   //hspi = new SPIClass(HSPI);
   //hspi->begin();
