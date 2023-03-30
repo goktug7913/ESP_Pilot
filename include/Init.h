@@ -23,6 +23,7 @@
 #include "Controller.h"               //Master Flight Control Class
 #include "Telemetry.h"                //Telemetry class
 #include "SerialManager.h"            //Serial Manager, responsible for managing serial communication
+#include "Webserver.h"                //Webserver manager, responsible for managing and sending webserver data
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // GLOBAL OBJECTS- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -31,10 +32,9 @@ FC FliCon;                            //Flight Controller
 FC_cfg cfg;                           //Flight Controller Configuration
 TelemetryManager Logger;              //Telemetry manager, responsible for managing and sending telemetry
 SerialMgr SerialMan;                  //Serial manager, responsible for managing and sending serial data
-
+Webserver WebMan;                     //Webserver manager, responsible for managing and sending webserver data
 SPIClass* hspi = nullptr;             //SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);                    //MPU6050 Class
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // RF24 radio(RF24_CE, RF24_CSN, RF24_FREQ); // (CE,CSN,SPI CLK)
 uint8_t address[][6] = {"1Node", "2Node"};
@@ -134,7 +134,6 @@ void coldstart(){
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // Should detect if reboot happened mid flight at this point and recover offsets from EEPROM
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  
   Serial.println(F("Calculating offsets, don't move the quad"));
   mpu.calcOffsets(); // gyro and accelero
   delay(1500); // wait for stable readings
@@ -142,7 +141,7 @@ void coldstart(){
 
   radioNumber = 1 == 1;
   //radioSetup();
-
+  WebMan.init(); //Initialize webserver
   SerialMan.SendMsg(SERIALPOLL);
 }
 // - - - - - - - - - - - - - - - - -

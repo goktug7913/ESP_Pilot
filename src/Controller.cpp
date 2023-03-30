@@ -1,12 +1,14 @@
 #include "Controller.h"
 #include "Telemetry.h"
 #include "SerialManager.h"
+#include "Webserver.h"
 
 //extern FC_cfg cfg; // TODO: deprecate
 extern ConfigSuite CfgMan;
 extern TelemetryManager Logger;
 extern MPU6050 mpu;
 extern SerialMgr SerialMan;
+extern Webserver WebMan;
 
 FC::FC(){
 }

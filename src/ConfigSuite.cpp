@@ -18,6 +18,8 @@ FC_cfg ConfigSuite::getFlashCfg(){
 }
 
 void ConfigSuite::setCfg(uint8_t* cfgbytes){
+  // This function is used to set the current config from a byte array
+  // Will be deprecated when WebUI is implemented
   memcpy(&current_config, &cfgbytes, sizeof(FC_cfg));  //Load the received config data
 }
 
