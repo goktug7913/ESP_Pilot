@@ -5,8 +5,8 @@
 
 class Webserver {
 
-    const char* ssid     = "Reapers";
-    const char* password = "Reapers21";
+    const char* ssid     = "";
+    const char* password = "";
     
     String header;
 
