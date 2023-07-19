@@ -103,7 +103,7 @@ void SerialMgr::data_done(){
   switch (header.cmd){
     // - - - - - - - - - - - - - - - - -
     case CFG_MODE:
-      FliCon.usbmode = 1; //Set USB mode
+      FliCon.usbmode = true; //Set USB mode
       SendMsg(HANDSHAKE); //Send handshake
     break;
     // - - - - - - - - - - - - - - - - -
@@ -117,7 +117,7 @@ void SerialMgr::data_done(){
     break;
     // - - - - - - - - - - - - - - - - -
     case ARM_TETHERED:
-      FliCon.armed = 1; //Set armed flag
+      FliCon.armed = true; //Set armed flag
     break;
     // - - - - - - - - - - - - - - - - -
     case DISARM:

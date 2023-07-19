@@ -10,8 +10,7 @@ extern MPU6050 mpu;
 extern SerialMgr SerialMan;
 extern Webserver WebMan;
 
-FC::FC(){
-}
+FC::FC()= default;
 
 void FC::Start(){ //
 
@@ -161,7 +160,7 @@ void FC::writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4){
 
 void FC::disarm(){
   for(int i = 0; i<200;i++){ // Force rotor stop? weird bug!!
-  if(i==0){armed = 0;} 
+  if(i==0){armed = false;}
   writeEsc(1000,1000,1000,1000);
   }
 }

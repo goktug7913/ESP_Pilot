@@ -10,7 +10,7 @@ void TelemetryManager::StartRecording(){
 }
 
 void TelemetryManager::StopRecording(){
-  enablerecording = 0;
+  enablerecording = false;
 }
 
 void TelemetryManager::StartSerial(){

@@ -1,13 +1,15 @@
 #include "Webserver.h"
+#include "Config.h"
 
 AsyncWebServer server(80);
+extern FC_cfg cfg;
 
 void Webserver::init() {
-    WiFi.mode(WIFI_MODE_APSTA);
+    WiFiClass::mode(WIFI_MODE_APSTA);
     WiFi.begin(ssid, password);
 
     // Print the IP address when connected
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFiClass::status() != WL_CONNECTED) {
         delay(3000);
         Serial.print(".");
     }
@@ -32,21 +34,33 @@ void Webserver::init() {
 
     server.begin();
 
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-            request->send(SPIFFS, "/index.html", "text/html");
-        });
+    // We serve SPIFFS files from the root path ("/"), basic web app
+    server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
-    server.on("/index.css", HTTP_GET, [](AsyncWebServerRequest *request){
-            request->send(SPIFFS, "/index.css", "text/css");
-        });
+    // API endpoints
+    server.on("/api", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/plain", "Hello, world");
+    });
 
-    server.on("/normalize.css", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(SPIFFS, "/normalize.css", "text/css");
+    server.on("/pid", HTTP_GET, [](AsyncWebServerRequest *request) {
+        // Convert cfg to JSON
+        String buffer = "{";
+        buffer += "\"pitchKp\": " + String(cfg.Kp_pitch) + ",";
+        buffer += "\"pitchKi\": " + String(cfg.Ki_pitch) + ",";
+        buffer += "\"pitchKd\": " + String(cfg.Kd_pitch) + ",";
+        buffer += "\"rollKp\": " + String(cfg.Kp_roll) + ",";
+        buffer += "\"rollKi\": " + String(cfg.Ki_roll) + ",";
+        buffer += "\"rollKd\": " + String(cfg.Kd_roll) + ",";
+        buffer += "\"yawKp\": " + String(cfg.Kp_yaw) + ",";
+        buffer += "\"yawKi\": " + String(cfg.Ki_yaw) + ",";
+        buffer += "\"yawKd\": " + String(cfg.Kd_yaw) + ",";
+        buffer += "\"maxAngle\": " + String(cfg.max_angle);
+        buffer += "}";
+        request->send(200, "application/json", buffer);
     });
 
 
 }
 
 void Webserver::handleClient() {
-    return;
 }

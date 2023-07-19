@@ -12,7 +12,7 @@ class SerialMgr{
   void ReceiveMsg();
   void SendMsg(uint8_t code);
   void SendMsg(uint8_t code, uint16_t opt);
-  void SendMsg(uint8_t code, uint16_t opt, uint8_t* data);
+  static void SendMsg(uint8_t code, uint16_t opt, uint8_t* data);
 
   private:
 

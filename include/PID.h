@@ -17,10 +17,10 @@ class PID {
 
 
   //TO-DO: move to private
-  float Kp, Ki, Kd;   //PID Gains
-  float p, i, d;      //Error values
-  float p_prev;       //Previous P Term
-  float dT;       //Delta time in millisecs
+  float Kp{}, Ki{}, Kd{};   //PID Gains
+  float p{}, i{}, d{};      //Error values
+  float p_prev{};       //Previous P Term
+  float dT{};       //Delta time in millisecs
   
   float iScalar = ITERMSCALAR;
   float iMax =  ITERMLIMIT;

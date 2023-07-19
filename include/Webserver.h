@@ -5,8 +5,8 @@
 
 class Webserver {
 
-    const char* ssid     = "";
-    const char* password = "";
+    const char* ssid     = "Reapers";
+    const char* password = "Reapers21";
     
     String header;
 
@@ -17,5 +17,5 @@ class Webserver {
 
     public:
         void init();
-        void handleClient();
+        static void handleClient();
 };
