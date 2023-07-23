@@ -7,6 +7,9 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const static uint8_t    pwm_ch_amt = PWM_CHANNELS_NUM;          // Number of PWM channels
 
+/**
+ * @brief Config struct, default values are set in Config.h
+*/
 struct FC_cfg{
   uint32_t          header = CFG_MAGIC;                         // Magic number to identify config data
 

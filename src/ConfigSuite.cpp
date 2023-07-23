@@ -1,8 +1,4 @@
 #include "ConfigSuite.h"
-#include "SerialManager.h"
-
-//extern FC_cfg cfg;
-extern SerialMgr SerialMan;
 
 FC_cfg ConfigSuite::getFlashCfg(){
   FC_cfg flashcfg;
@@ -21,8 +17,8 @@ FC_cfg ConfigSuite::getFlashCfg(){
  * @brief Writes the config to the flash memory
  * @returns true if the config is valid, false if not
  */
-void ConfigSuite::setCfg(uint8_t* cfgbytes){
-  memcpy(&current_config, &cfgbytes, sizeof(FC_cfg));  //Load the received config data
+void ConfigSuite::setCfg(FC_cfg* cfg){
+  memcpy(&current_config, cfg, sizeof(FC_cfg));  //Load the received config data
 }
 
 bool ConfigSuite::setFlashCfg(FC_cfg* cfg){
@@ -32,9 +28,9 @@ bool ConfigSuite::setFlashCfg(FC_cfg* cfg){
   if (status) {
     for (int i = EEPROM_START_ADDR; i < sizeof(FC_cfg); i++) {EEPROM.write(i, *(uint8_t*)&cfg+i);}
     EEPROM.commit();
-    SerialMan.SendMsg(W_EEPROM_OK); //Flash write successful message
+    Serial.println("Config saved");
   } else {
-    SerialMan.SendMsg(S_EEPROM_ERR); //Config data is invalid
+    Serial.println("Invalid config");
   }
 
   return status; //Future use

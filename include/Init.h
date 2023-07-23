@@ -22,7 +22,6 @@
 
 #include "Controller.h"               //Master Flight Control Class
 #include "Telemetry.h"                //Telemetry class
-#include "SerialManager.h"            //Serial Manager, responsible for managing serial communication
 #include "Webserver.h"                //Webserver manager, responsible for managing and sending webserver data
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // GLOBAL OBJECTS- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -31,7 +30,6 @@ ConfigSuite CfgMan;                   //Configuration manager, responsible for m
 FC FliCon;                            //Flight Controller
 FC_cfg cfg;                           //Flight Controller Configuration
 TelemetryManager Logger;              //Telemetry manager, responsible for managing and sending telemetry
-SerialMgr SerialMan;                  //Serial manager, responsible for managing and sending serial data
 Webserver WebMan;                     //Webserver manager, responsible for managing and sending webserver data
 SPIClass* hspi = nullptr;             //SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);                    //MPU6050 Class
@@ -142,7 +140,6 @@ void coldstart(){
   radioNumber = true;
   //radioSetup();
   WebMan.init(); //Initialize webserver
-  SerialMan.SendMsg(SERIALPOLL);
 }
 // - - - - - - - - - - - - - - - - -
 void TempUpdate(){ //Update temperature

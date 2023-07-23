@@ -1,13 +1,11 @@
 #include "Controller.h"
 #include "Telemetry.h"
-#include "SerialManager.h"
 #include "Webserver.h"
 
 //extern FC_cfg cfg; // TODO: deprecate
 extern ConfigSuite CfgMan;
 extern TelemetryManager Logger;
 extern MPU6050 mpu;
-extern SerialMgr SerialMan;
 extern Webserver WebMan;
 
 FC::FC()= default;
@@ -28,7 +26,6 @@ void FC::Start(){ //
   while(armed){ // Loop while armed
     if(rx_raw[4] < 1600 && rx_raw[4] > 1400){writeEsc(rx_raw[2], rx_raw[2], rx_raw[2], rx_raw[2]);} // Bypass PID when SWC is pos2, for ESC signal calibration
     tCtr++;
-    SerialMan.ReceiveMsg(); // Receive serial data
     MotionUpdate(); // Update motion data
     InputTransform(); // Transform input data
 

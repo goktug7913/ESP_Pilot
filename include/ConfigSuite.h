@@ -13,12 +13,13 @@ class ConfigSuite{
   bool    setFlashCfg(FC_cfg* cfg);     //Writes the config to the flash memory
 
   void    setCfg(FC_cfg* cfg);          //set active config from cfg struct
-  void    setCfg(uint8_t* cfgbytes);    //set active config from byte array
-  FC_cfg* getActiveCfg();               //returns current cfg (not in eeprom)
-
+  /**
+   * @brief Returns the active config (not the one in flash)
+   * @returns FC_cfg* pointer to the active config
+  */
+  FC_cfg* getActiveCfg();               
 
   private:
-
   FC_cfg current_config;               //current config
 
   static bool   isValidCfg(FC_cfg* cfg);      //checks header
