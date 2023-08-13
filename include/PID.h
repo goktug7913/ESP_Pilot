@@ -3,10 +3,22 @@
 #include <array>
 #pragma once
 
+/**
+ * @brief PID Controller class
+ * @details This class implements a PID controller
+ * @version 0.1
+*/
 class PID {
   public:
   
+  /**
+   * @brief Construct a new PID object with default gains
+  */
   PID();
+
+  /**
+   * @brief Construct a new PID object with given gains
+  */
   PID(float p_gain, float i_gain, float d_gain);
 
   // Public Functions of the PID instance
@@ -16,7 +28,7 @@ class PID {
   std::array<float,3> GetGains();
 
 
-  //TO-DO: move to private
+  // TODO: move to private
   float Kp{}, Ki{}, Kd{};   //PID Gains
   float p{}, i{}, d{};      //Error values
   float p_prev{};       //Previous P Term

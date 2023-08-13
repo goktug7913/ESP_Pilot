@@ -2,14 +2,16 @@
 #include "Telemetry.h"
 #include "Webserver.h"
 
-//extern FC_cfg cfg; // TODO: deprecate
 extern ConfigSuite CfgMan;
 extern TelemetryManager Logger;
 extern MPU6050 mpu;
 extern Webserver WebMan;
 
-FC::FC()= default;
+FC::FC() = default;
 
+/**
+ * @brief Initialize the flight controller
+*/
 void FC::Start(){ //
 
   // Create PID Controller objects in the constructor
@@ -49,6 +51,9 @@ void FC::Start(){ //
   }
 }
 
+/**
+ * @brief Map receiver input to target angles
+*/
 void FC::InputTransform(){
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   // MAP ROLL SIGNAL TO DEGREE TARGET
@@ -69,7 +74,7 @@ void FC::InputTransform(){
     rx_scaled[1] = map( rx_raw[1],  PWM_CENTER,  2000, 0, 10*CfgMan.getActiveCfg()->max_angle )/10; // To float with .1 precision
   }
   else if (rx_raw[1] < PWM_CENTER-CfgMan.getActiveCfg()->rx_deadzone){ // Stick Down
-    rx_scaled[1] = 0-map( rx_raw[1],  PWM_CENTER,  1000,  0,  10*CfgMan.getActiveCfg()->max_angle )/10; // To float with .1 precision
+    rx_scaled[1] = 0 - map( rx_raw[1],  PWM_CENTER,  1000,  0,  10*CfgMan.getActiveCfg()->max_angle )/10; // To float with .1 precision
   }
   else { // Stick Centered, this is added to fix a bug where the stick is centered but the value is not 0
     rx_scaled[1] = 0;
@@ -84,7 +89,6 @@ void FC::InputTransform(){
   //so the angle target can be over 360 or below 0 degrees.
 
   //The rate of change varies by execution speed, that needs to be fixed.
-
   if (rx_raw[0] >= PWM_CENTER+CfgMan.getActiveCfg()->rx_deadzone){ // Yaw Stick Right
     rx_scaled[2] += rx_raw[0]/1000; // To float with .1 precision
   }
@@ -94,8 +98,10 @@ void FC::InputTransform(){
 
 }
 
-void FC::OutputTransform(){
-
+/**
+ * @brief Transforms the PID output to ESC PWM signals and sends them to the ESCs
+*/
+void FC::OutputTransform() {
   esc1_out = esc2_out = esc3_out = esc4_out = 0; // Reset ESCs to 0
   
   // Calculate Roll PWM
@@ -134,27 +140,41 @@ void FC::OutputTransform(){
   if (esc3_out < 1000) {esc3_out = 1000;} else if(esc3_out > 2000) {esc3_out = 2000;}
   if (esc4_out < 1000) {esc4_out = 1000;} else if(esc4_out > 2000) {esc4_out = 2000;}
 
-  writeEsc(1000, esc2_out, 1000, esc4_out); 
+  writeEsc(esc1_out, esc2_out, esc3_out, esc4_out); 
 }
 
-void FC::MotionUpdate(){
+/**
+ * @brief Update MPU6050 sensor values
+*/
+void FC::MotionUpdate() {
   mpu.update(); // Not sure if necessary
   gyro[0]     = mpu.getAngleX(); // Roll
   gyro[1]     = mpu.getAngleY(); // Pitch
   gyro[2]     = mpu.getAngleZ(); // Yaw
 
+  // TODO: These will be used for anti-drift later on.
   //accel[0]    = mpu.getAccX(); 
   //accel[1]    = mpu.getAccY();
   //accel[2]    = mpu.getAccZ();
 }
 
-void FC::writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4){
+/**
+ * @brief Write PWM signals to ESCs
+ * @param esc1 PWM signal for ESC1
+ * @param esc2 PWM signal for ESC2
+ * @param esc3 PWM signal for ESC3
+ * @param esc4 PWM signal for ESC4
+*/
+void FC::writeEsc(uint32_t esc1, uint32_t esc2, uint32_t esc3, uint32_t esc4) {
   mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, esc1);
   mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, esc2);
   mcpwm_set_duty_in_us(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, esc3);
   mcpwm_set_duty_in_us(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_B, esc4);
 }
 
+/**
+ * @brief Disarm the quadcopter
+*/
 void FC::disarm(){
   for(int i = 0; i<200;i++){ // Force rotor stop? weird bug!!
   if(i==0){armed = false;}

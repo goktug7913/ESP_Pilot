@@ -39,11 +39,13 @@ uint8_t address[][6] = {"1Node", "2Node"};
 bool radioNumber = 1; // 0 uses address[0] to transmit, 1 uses address[1] to transmit
 bool role = false;    // true = TX role, false = RX role
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ * @brief Initialize RMT's interrupt handler
+ * @details https://www.esp32.com/viewtopic.php?t=7116#p32383 (ESP32 Forum) this ISR only checks chX_rx_end
+ * @param void
+ * @return void
+*/
 static void rmt_isr_handler(void* arg){
-  // RMT interrupt handler
-  // https://www.esp32.com/viewtopic.php?t=7116#p32383
-  // this ISR only checks chX_rx_end
-
   uint32_t intr_st = RMT.int_st.val;
   // declaration of RMT.int_st:
   // bit 0: ch0_tx_end
@@ -75,7 +77,13 @@ static void rmt_isr_handler(void* arg){
   }
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void rmt_init() { // initialize RMT
+/**
+ * @brief Initialize RMT receiver
+ * @details Initialize RMT receiver for PWM input
+ * @return void
+ * @note This function is called during setup()
+*/
+void rmt_init() {
     uint8_t i; // channel number
 
     rmt_config_t rmt_channels[pwm_ch_amt] = {}; // initialize channel configuration array
@@ -100,10 +108,10 @@ void rmt_init() { // initialize RMT
     rmt_isr_register(rmt_isr_handler, NULL, 0, NULL); // register interrupt handler function
 }
 // - - - - - - - - - - - - - - - - -
+/**
+ * @brief This function is called once at startup, and is responsible for initializing all hardware and objects,Also a reboot should be detected here, and recovery should be attempted if necessary
+*/
 void coldstart(){
-  //This function is called once at startup, and is responsible for initializing all hardware and objects
-  //Also a reboot should be detected here, and recovery should be attempted if necessary
-
   Serial.begin(SERIAL_BAUD); // initialize serial port
   while (!Serial) {} //Wait for serial to be ready
 
@@ -146,7 +154,10 @@ void TempUpdate(){ //Update temperature
   FliCon.temperature = mpu.getTemp();
 }
 // - - - - - - - - - - - - - - - - -
-void initEscDrive(){ //Initialize ESC Pins
+/**
+ * @brief Initialize ESCs
+*/
+void initEscDrive() {
   mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0A, CfgMan.getActiveCfg()->esc1_pin); //Initialize ESC1
   mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0B, CfgMan.getActiveCfg()->esc2_pin); //Initialize ESC2
   mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM1A, CfgMan.getActiveCfg()->esc3_pin); //Initialize ESC3
