@@ -2,10 +2,13 @@
 #include "Config.h"
 #include "ArduinoJson.h"
 #include "Controller.h"
+#include <WebSocketsServer.h> // Include the WebSocket library
 
 extern FC FliCon;
 extern ConfigSuite CfgMan;
+
 AsyncWebServer server(80);
+WebSocketsServer webSocketServer(81); // Initialize WebSocket server on port 81
 
 void Webserver::init() {
     WiFiClass::mode(WIFI_MODE_APSTA);
@@ -25,21 +28,22 @@ void Webserver::init() {
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 
-    if (!SPIFFS.begin(true)) {
-        Serial.println("An Error has occurred while mounting SPIFFS");
-        return;
-    }
-
-    homepage = SPIFFS.open("/index.html", "r");
-    if (!homepage) {
-        Serial.println("Failed to open homepage");
-    }
-
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     server.begin();
 
-    // We serve SPIFFS files from the root path ("/"), basic web app
-    server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
+    // WebSocket event handler for arm state updates
+    webSocketServer.onEvent([](uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+        switch(type) {
+            case WStype_TEXT: {
+                // Log message
+                Serial.printf("[%u] get Text: %s\n", num, payload);
+            }
+            // ... other WebSocket event types
+        }
+    });
+
+    // Start WebSocket server
+    webSocketServer.begin();
 
     // API endpoints
     server.on("/api", HTTP_GET, [](AsyncWebServerRequest *request) {

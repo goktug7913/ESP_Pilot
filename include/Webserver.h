@@ -13,7 +13,6 @@ class Webserver {
     bool active = false;
 
     TaskHandle_t task;
-    File homepage;
 
     public:
         void init();
