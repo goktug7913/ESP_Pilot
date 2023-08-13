@@ -17,6 +17,11 @@ Another reason why the ESP32 is a great choice for a flight controller is its af
 
 Overall, the ESP32's processing power, built-in connectivity options, and affordability make it a compelling choice for a flight controller.
 
+# Floating Point Performance
+Compared to more traditional flight controllers, the ESP32 has a lower floating point performance. This is due to the fact that the ESP32 uses a single-precision floating point unit, while most flight controllers use a double-precision floating point unit. However, this does not mean that the ESP32 is incapable of performing complex calculations. In fact, the ESP32's floating point performance is comparable to that of the STM32F4, which is one of the most popular flight controllers on the market.
+
+Moreover, this firmware is not intended to be used in high-performance applications. It is designed for hobbyists and DIY enthusiasts who want to build their own flight controller using the ESP32 microcontroller. As such, the firmware does not require a high level of floating point performance or super fast response times.
+
 # Development Hardware
 - NodeMCU-32S
 - MPU6050
@@ -45,7 +50,7 @@ You can use ESP-Configurator with serial connection to monitor telemetry and con
 
 # Features
 - Modular PID system, you can add/remove PID controllers for any axis. For example, you can have a PID controller for roll, pitch and yaw, but you can also have a PID controller for altitude, or a PID controller for heading. Some of the PID controllers are already implemented, but you can add your own using the `PIDController` class.
-- Configurable over serial connection (via ESP-Configurator) and <b>in the future</b> over WiFi (via web configurator)
+- Configurable over WiFi (WIP, via web configurator)
 
 # Supported hardware
 Currently supports:
@@ -55,10 +60,9 @@ Currently supports:
 - MPU6050 based IMU's
 
 # Future plans
-- Migration to ESP-IDF from Arduino framework. I'm planning to migrate to ESP-IDF because it's more powerful and it has more features. I'm also planning to use FreeRTOS for multithreading.
-- Custom MPU6050 driver. Currently MPU6050_Light is used, but I'm not comfortable with it. I'm planning to write my own driver which will be more configurable and use quaternions instead of Euler angles.
 - AP mode and web configurator
-- Bluetooth configurator (I don't see a benefit of this, but I might add it)
+- Multithreading
+- Custom MPU6050 driver. Currently MPU6050_Light is used, but I'm not comfortable with it. I'm planning to write my own driver which will be more configurable and use quaternions instead of Euler angles.
 - Autoland and minimum altitude protection support (I'm planning to use ultrasonic sensor for this)
 - Altitude measurement without GPS using barometer.
 - RC receiver support (SBUS, PPM, etc.)
@@ -68,8 +72,9 @@ Currently supports:
 - Support for more sensors (barometer, compass, etc.)
 - Support for more flight modes (currently only supports manual mode)
 - Wider range of ESP32 boards
-- Logging to SD card
+- Logging to SD card, maybe.
 - Long range telemetry (I'm thinking of using LoRa or nRF24L01+)
+- Bluetooth configurator (I don't see a benefit of this, but I might add it)
 - Tool for pre-build configuration, building and flashing in an easy way. (I'm thinking of using Python for this, as ESP-IDF uses Python already.)
 
 # Contributing
