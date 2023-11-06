@@ -1,16 +1,14 @@
 #include "Telemetry.h"
 #include "Controller.h"
-#include "SerialManager.h"
 
 extern FC FliCon;
-extern SerialMgr SerialMan;
 
 void TelemetryManager::StartRecording(){
   enablerecording = 1;
 }
 
 void TelemetryManager::StopRecording(){
-  enablerecording = 0;
+  enablerecording = false;
 }
 
 void TelemetryManager::StartSerial(){
@@ -23,7 +21,7 @@ void TelemetryManager::StopSerial(){
 
 void TelemetryManager::SerialSendFrame(){
   SaveFrame();
-  SerialMan.SendMsg(TMTY_DATA_FLAG,0,(uint8_t*)&current_frame);
+  // SerialMan.SendMsg(TMTY_DATA_FLAG,0,(uint8_t*)&current_frame);
 }
 
 void TelemetryManager::SaveFrame(){

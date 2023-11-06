@@ -1,5 +1,5 @@
 #include "definitions.h"
-#include "stdint.h"
+#include <cstdint>
 #pragma once
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -7,6 +7,9 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const static uint8_t    pwm_ch_amt = PWM_CHANNELS_NUM;          // Number of PWM channels
 
+/**
+ * @brief Config struct, default values are set in Config.h
+*/
 struct FC_cfg{
   uint32_t          header = CFG_MAGIC;                         // Magic number to identify config data
 
@@ -28,12 +31,12 @@ struct FC_cfg{
 
   //Settings
   float             vBat = 11.1;                                // Battery max voltage
-  bool              vBat_compensation = 0;                      // Enable battery voltage compensation
+  bool              vBat_compensation = false;                      // Enable battery voltage compensation
 
   //Aux modules
-  bool              nrf24_telemetry = 0;                        // Enable nrf24 telemetry
-  bool              radar_altimeter = 0;                        // Enable radar altimeter
-  bool              compass = 0;                                // Enable compass
+  bool              nrf24_telemetry = false;                        // Enable nrf24 telemetry
+  bool              radar_altimeter = false;                        // Enable radar altimeter
+  bool              compass = false;                                // Enable compass
 
   //ESC signal pins (initialized as defined in code)
   uint8_t           esc1_pin = ESC_1;

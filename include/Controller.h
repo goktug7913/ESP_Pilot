@@ -14,22 +14,22 @@
 class FC{
   public:
 
-  std::array<float, 3> gyro;
-  std::array<float, 3> accel;
-  std::array<float, 3> rx_scaled;
-  std::array<uint16_t, pwm_ch_amt> rx_raw;
+  std::array<float, 3> gyro{};
+  std::array<float, 3> accel{};
+  std::array<float, 3> rx_scaled{};
+  std::array<uint16_t, pwm_ch_amt> rx_raw{};
 
-  float pid_p, pid_r, pid_y;
-  int esc1_out, esc2_out, esc3_out, esc4_out;
+  float pid_p{}, pid_r{}, pid_y{};
+  int esc1_out{}, esc2_out{}, esc3_out{}, esc4_out{};
 
-  float temperature;
-  bool armed = 0;
-  bool recovery = 0;
-  bool usbmode = 0;
-  bool alt_hold = 0;
-  bool gps_hold = 0;
-  float dt;
-  float t1;
+  float temperature{};
+  bool armed = false;
+  bool recovery = false;
+  bool usbmode = false;
+  bool alt_hold = false;
+  bool gps_hold = false;
+  float dt{};
+  float t1{};
   
   PID pitch_pid;
   PID roll_pid;

@@ -5,17 +5,16 @@
 
 class Webserver {
 
-    const char* ssid     = "";
-    const char* password = "";
+    const char* ssid     = "Reapers";
+    const char* password = "Reapers21";
     
     String header;
 
     bool active = false;
 
     TaskHandle_t task;
-    File homepage;
 
     public:
         void init();
-        void handleClient();
+        static void handleClient();
 };

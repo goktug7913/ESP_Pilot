@@ -1,16 +1,21 @@
 #include "Webserver.h"
+#include "Config.h"
+#include "ArduinoJson.h"
 #include "Controller.h"
+#include <WebSocketsServer.h> // Include the WebSocket library
 
-extern FC controller;
+extern FC FliCon;
+extern ConfigSuite CfgMan;
 
 AsyncWebServer server(80);
+WebSocketsServer webSocketServer(81); // Initialize WebSocket server on port 81
 
 void Webserver::init() {
-    WiFi.mode(WIFI_MODE_APSTA);
+    WiFiClass::mode(WIFI_MODE_APSTA);
     WiFi.begin(ssid, password);
 
     // Print the IP address when connected
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFiClass::status() != WL_CONNECTED) {
         delay(3000);
         Serial.print(".");
     }
@@ -23,17 +28,7 @@ void Webserver::init() {
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 
-    if (!SPIFFS.begin(true)) {
-        Serial.println("An Error has occurred while mounting SPIFFS");
-        return;
-    }
-
-    homepage = SPIFFS.open("/index.html", "r");
-    if (!homepage) {
-        Serial.println("Failed to open homepage");
-        return;
-    }
-
+    DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     server.begin();
     /*
         Architecture planning:
@@ -48,54 +43,113 @@ void Webserver::init() {
             - Distribute the frontend as a standalone app, frontend will explore the client's network for the ESP
     */
 
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-            request->send(SPIFFS, "/index.html", "text/html");
-        });
-
-    server.on("/index.css", HTTP_GET, [](AsyncWebServerRequest *request){
-            request->send(SPIFFS, "/index.css", "text/css");
-        });
-
-    server.on("/normalize.css", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(SPIFFS, "/normalize.css", "text/css");
-    });
-
-    // API endpoints
-    // - - - - - - - - - - - - - - - -
-    // Reboot ESP
-    server.on("/api/espreboot", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(200, "text/plain", "Rebooting ESP");
-        ESP.restart();
-    });
-
-    // Set PID values
-    server.on("/api/pid", HTTP_POST, [](AsyncWebServerRequest *request){
-        if (request->hasParam("p") && request->hasParam("i") && request->hasParam("d")) {
-            controller.setGains(
-                request->getParam("p")->value().toFloat(),
-                request->getParam("i")->value().toFloat(),
-                request->getParam("d")->value().toFloat()
-            );
-            printf("New PID values: %f, %f, %f\n", controller.pitch_pid.Kp, controller.pitch_pid.Ki, controller.pitch_pid.Kd);
-            request->send(200, "text/plain", "OK");
-        } else {
-            request->send(400, "text/plain", "Bad Request");
+    // WebSocket event handler for arm state updates
+    webSocketServer.onEvent([](uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+        switch(type) {
+            case WStype_TEXT: {
+                // Log message
+                Serial.printf("[%u] get Text: %s\n", num, payload);
+            }
+            // ... other WebSocket event types
         }
     });
 
-    // Get current PID values
-    server.on("/api/pid", HTTP_GET, [](AsyncWebServerRequest *request){
-        String response = "{\"p\":";
-        response += controller.pitch_pid.Kp;
-        response += ",\"i\":";
-        response += controller.pitch_pid.Ki;
-        response += ",\"d\":";
-        response += controller.pitch_pid.Kd;
-        response += "}";
-        request->send(200, "application/json", response);
+    // Start WebSocket server
+    webSocketServer.begin();
+
+    // API endpoints
+    server.on("/api", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/plain", "Hello, world");
+    });
+
+    server.on("/pid", HTTP_GET, [](AsyncWebServerRequest *request) {
+        auto const cfg = CfgMan.getActiveCfg();
+        // Convert cfg to JSON
+        StaticJsonDocument<200> doc;
+        doc["pitchKp"] = cfg->Kp_pitch;
+        doc["pitchKi"] = cfg->Ki_pitch;
+        doc["pitchKd"] = cfg->Kd_pitch;
+        doc["rollKp"] = cfg->Kp_roll;
+        doc["rollKi"] = cfg->Ki_roll;
+        doc["rollKd"] = cfg->Kd_roll;
+        doc["yawKp"] = cfg->Kp_yaw;
+        doc["yawKi"] = cfg->Ki_yaw;
+        doc["yawKd"] = cfg->Kd_yaw;
+        doc["maxAngle"] = cfg->max_angle;
+
+        String json;
+        serializeJson(doc, json);
+
+        request->send(200, "application/json", json);
+    });
+
+    server.on("/pid", HTTP_POST, [](AsyncWebServerRequest *request){
+        // Convert JSON to cfg
+        StaticJsonDocument<200> doc;
+        deserializeJson(doc, request->arg("plain"));
+        
+        auto cfg = CfgMan.getActiveCfg();
+        cfg->Kp_pitch = doc["pitchKp"];
+        cfg->Ki_pitch = doc["pitchKi"];
+        cfg->Kd_pitch = doc["pitchKd"];
+        cfg->Kp_roll = doc["rollKp"];
+        cfg->Ki_roll = doc["rollKi"];
+        cfg->Kd_roll = doc["rollKd"];
+        cfg->Kp_yaw = doc["yawKp"];
+        cfg->Ki_yaw = doc["yawKi"];
+        cfg->Kd_yaw = doc["yawKd"];
+        cfg->max_angle = doc["maxAngle"];
+
+        CfgMan.setCfg(cfg);
+
+        auto const newcfg = CfgMan.getActiveCfg();
+        StaticJsonDocument<32> response;
+
+        response["pitchKp"] = newcfg->Kp_pitch;
+        response["pitchKi"] = newcfg->Ki_pitch;
+        response["pitchKd"] = newcfg->Kd_pitch;
+        response["rollKp"] = newcfg->Kp_roll;
+        response["rollKi"] = newcfg->Ki_roll;
+        response["rollKd"] = newcfg->Kd_roll;
+        response["yawKp"] = newcfg->Kp_yaw;
+        response["yawKi"] = newcfg->Ki_yaw;
+        response["yawKd"] = newcfg->Kd_yaw;
+        response["maxAngle"] = newcfg->max_angle;
+    
+        String json;
+        serializeJson(response, json);
+
+        request->send(200, "application/json", json);
+    });
+
+    server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+        // Convert cfg to JSON
+        StaticJsonDocument<32> doc;
+        doc["temperature"] = FliCon.temperature;
+
+        String json;
+        serializeJson(doc, json);
+
+        request->send(200, "application/json", json);
+    });
+
+    server.on("/restart", HTTP_POST, [](AsyncWebServerRequest *request){
+        request->send(200, "text/plain", "OK");
+        ESP.restart();
+    });
+
+    server.on("/armState", HTTP_GET, [](AsyncWebServerRequest *request){
+        // Convert cfg to JSON
+        StaticJsonDocument<32> doc;
+        doc["armed"] = FliCon.armed;
+
+        String json;
+        serializeJson(doc, json);
+
+        request->send(200, "application/json", json);
     });
 }
 
 void Webserver::handleClient() {
-    return;
+    
 }

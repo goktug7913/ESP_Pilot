@@ -1,7 +1,7 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include <stdint.h>
+#include <cstdint>
 #pragma once
 
 // A Serial frame is structured like this:
