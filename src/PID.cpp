@@ -2,38 +2,46 @@
 
 extern FC_cfg cfg; //
 
-PID::PID(){
+PID::PID()
+{
 	// Default constructor
 }
 
-PID::PID(float p_gain, float i_gain, float d_gain) {
+PID::PID(float proportionalGain, float integralGain, float derivativeGain)
+{
 	// Constructor with initial PID gains
-	Kp = p_gain;
-	Ki = i_gain;
-	Kd = d_gain;
+	this->proportionalGain = proportionalGain;
+	this->integralGain = integralGain;
+	this->derivativeGain = derivativeGain;
 }
 
-float PID::Calculate(float pv, float target, float dt) {
-	dT = dt;
-	
-	p = target - pv;
+float PID::Calculate(float processVariable, float target, float deltaTime)
+{
+	this->deltaTime = deltaTime;
 
+	float error = target - processVariable;
 
-	if(p > ITERMDEADBAND || p < ITERMDEADBAND){ //some deadband
-		i += (Ki * p * iScalar * dT);
+	if (abs(error) > ITERMDEADBAND)
+	{ // some deadband
+		this->integral += (this->integralGain * error * this->integralScalar * this->deltaTime);
 	}
 
-	d = Kd * ((p - p_prev) / dT);
-  
-  	if (i>iMax){i = iMax;}
-  	if (i<iMin){i = iMin;}
-	p_prev = p;
+	float derivative = this->derivativeGain * ((error - this->previousError) / this->deltaTime);
 
-	return (Kp * p) + i + (Kd * d);
+	this->integral = clamp(this->integral, this->iMin, this->iMax);
+	this->previousError = error;
+
+	return (this->proportionalGain * error) + this->integral + derivative;
 }
 
-void PID::SetGains(float p_gain, float i_gain, float d_gain){
-	Kp = p_gain;
-	Ki = i_gain;
-	Kd = d_gain;
+void PID::SetGains(float proportionalGain, float integralGain, float derivativeGain)
+{
+	this->proportionalGain = proportionalGain;
+	this->integralGain = integralGain;
+	this->derivativeGain = derivativeGain;
+}
+
+float PID::clamp(float value, float min, float max)
+{
+	return std::max(min, std::min(max, value));
 }
