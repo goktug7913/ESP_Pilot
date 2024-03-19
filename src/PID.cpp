@@ -1,6 +1,6 @@
 #include "PID.h"
 
-extern FC_cfg cfg; //
+extern FC_cfg cfg; // global configuration
 
 PID::PID()
 {

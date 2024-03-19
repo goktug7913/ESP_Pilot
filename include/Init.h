@@ -1,12 +1,8 @@
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #include <Arduino.h>           //Arduino.h must be included first to ensure compatibility with libraries
 #include "freertos/FreeRTOS.h" //ESP32 RTOS
 #include "freertos/task.h"     //Task Scheduling
 #include "esp_log.h"           //ESP32 Logging
 #include "string.h"            //Memory operation
-// - - - - - - - - - - - - - - - - -
-#include <SPI.h>  //For nRF24 communication over SPI
-#include "RF24.h" //For nRF24 communication over SPI
 // - - - - - - - - - - - - - - - - -
 #include <Wire.h>          //I2C Bus for MPU6050, Magnetometer and OLED screen communication
 #include <MPU6050_light.h> //For MPU6050
@@ -29,13 +25,9 @@ ConfigSuite CfgMan;       // Configuration manager, responsible for managing and
 FC FliCon;                // Flight Controller
 FC_cfg cfg;               // Flight Controller Configuration
 Webserver WebMan;         // Webserver manager, responsible for managing and sending webserver data
-SPIClass *hspi = nullptr; // SPI, instantiated in coldstart() during setup()
 MPU6050 mpu(Wire);        // MPU6050 Class
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// RF24 radio(RF24_CE, RF24_CSN, RF24_FREQ); // (CE,CSN,SPI CLK)
-uint8_t address[][6] = {"1Node", "2Node"};
-bool radioNumber = 1; // 0 uses address[0] to transmit, 1 uses address[1] to transmit
-bool role = false;    // true = TX role, false = RX role
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * @brief Initialize RMT's interrupt handler
@@ -134,15 +126,6 @@ void coldstart()
 
   rmt_init(); // Initialize RMT
 
-  // hspi = new SPIClass(HSPI);
-  // hspi->begin();
-  /* // initialize NRF24 on the SPI bus
-  if (!radio.begin(hspi)) {
-    Serial.println(F("radio hardware is not responding!!"));
-    display.println(F("radio hardware is not responding!!"));
-    for(;;); // Don't proceed if nRF24 fail
-  }*/
-
   byte status = mpu.begin(); // Initialize MPU6050
   Serial.print(F("MPU6050 status: "));
   Serial.print(F(status));
@@ -170,16 +153,14 @@ void coldstart()
   delay(1000);       // wait for stable readings
   Serial.println("Done!\n");
 
-  radioNumber = true;
-  // radioSetup();
   WebMan.init(); // Initialize webserver
 }
-// - - - - - - - - - - - - - - - - -
+
 void TempUpdate()
 { // Update temperature
   FliCon.temperature = mpu.getTemp();
 }
-// - - - - - - - - - - - - - - - - -
+
 /**
  * @brief Initialize ESCs
  */
@@ -202,30 +183,3 @@ void initEscDrive()
   mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config); // Init ESC 1 & 2 Controller
   mcpwm_init(MCPWM_UNIT_1, MCPWM_TIMER_1, &pwm_config); // Init ESC 3 & 4 Controller
 }
-// - - - - - - - - - - - - - - - - -
-/*void Receive(){
-  uint8_t pipe;
-  if (radio.available(&pipe)) { // is there a payload? get the pipe number that recieved it
-    uint8_t bytes = radio.getDynamicPayloadSize();
-    radio.read(&FliCon.rx_raw, bytes); // fetch payload from FIFO
-    radio.writeAckPayload(1,&FliCon,sizeof(FliCon));
-  }
-}*/
-// - - - - - - - - - - - - - - - - -
-/*void radioSetup(){
-
-  radio.setPALevel(RF24_PA_LOW);  // RF24_PA_MAX is default.
-  radio.setPayloadSize(sizeof(FliCon.rx_raw));
-
-  radio.enableAckPayload();
-  radio.enableDynamicPayloads();
-  radio.writeAckPayload(1,&FliCon,sizeof(FliCon));
-
-  // set the TX address of the RX node into the TX pipe
-  radio.openWritingPipe(address[radioNumber]);     // always uses pipe 0
-
-  // set the RX address of the TX node into a RX pipe
-  radio.openReadingPipe(1, address[!radioNumber]); // using pipe 1
-
-  radio.startListening(); // put radio in RX mode
-}*/

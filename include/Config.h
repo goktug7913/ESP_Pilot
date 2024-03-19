@@ -2,9 +2,6 @@
 #include <cstdint>
 #pragma once
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// ------------SYNC ANY CHANGES TO THIS STRUCT WITH ESP_CONFIGURATOR APP CODE --------------
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const static uint8_t pwm_ch_amt = PWM_CHANNELS_NUM; // Number of PWM channels
 
 /**

@@ -129,52 +129,25 @@ void FC::OutputTransform()
   esc1_out = esc2_out = esc3_out = esc4_out = 0; // Reset ESCs to 0
 
   // Calculate Roll PWM
-  if (pid_r > 0)
-  { // Positive Roll
-    esc1_out += pid_r;
-    esc2_out -= pid_r;
-    esc3_out += pid_r;
-    esc4_out -= pid_r;
-  }
-  else
-  { // Negative Roll
-    esc2_out -= pid_r;
-    esc1_out += pid_r;
-    esc4_out -= pid_r;
-    esc3_out += pid_r;
-  }
+  int roll_sign = (pid_r > 0) ? 1 : -1;
+  esc1_out += pid_r * roll_sign;
+  esc2_out -= pid_r * roll_sign;
+  esc3_out += pid_r * roll_sign;
+  esc4_out -= pid_r * roll_sign;
 
   // Calculate Pitch PWM
-  if (pid_p < 0)
-  { // Negative Pitch
-    esc1_out -= pid_p;
-    esc3_out += pid_p;
-    esc2_out -= pid_p;
-    esc4_out += pid_p;
-  }
-  else
-  { // Positive Pitch
-    esc3_out += pid_p;
-    esc1_out -= pid_p;
-    esc4_out += pid_p;
-    esc2_out -= pid_p;
-  }
+  int pitch_sign = (pid_p < 0) ? -1 : 1;
+  esc1_out -= pid_p * pitch_sign;
+  esc3_out += pid_p * pitch_sign;
+  esc2_out -= pid_p * pitch_sign;
+  esc4_out += pid_p * pitch_sign;
 
   // Calculate Yaw PWM
-  if (pid_y < 0)
-  { // Negative Yaw
-    esc1_out += pid_y;
-    esc3_out -= pid_y;
-    esc2_out -= pid_y;
-    esc4_out += pid_y;
-  }
-  else
-  { // Positive Yaw
-    esc3_out -= pid_y;
-    esc1_out += pid_y;
-    esc4_out += pid_y;
-    esc2_out -= pid_y;
-  }
+  int yaw_sign = (pid_y < 0) ? -1 : 1;
+  esc1_out += pid_y * yaw_sign;
+  esc3_out -= pid_y * yaw_sign;
+  esc2_out -= pid_y * yaw_sign;
+  esc4_out += pid_y * yaw_sign;
 
   // Add Throttles
   esc1_out += rx_raw[2];
@@ -183,38 +156,10 @@ void FC::OutputTransform()
   esc4_out += rx_raw[2];
 
   // Limit PWM signals so ESC's won't complain
-  if (esc1_out < 1000)
-  {
-    esc1_out = 1000;
-  }
-  else if (esc1_out > 2000)
-  {
-    esc1_out = 2000;
-  }
-  if (esc2_out < 1000)
-  {
-    esc2_out = 1000;
-  }
-  else if (esc2_out > 2000)
-  {
-    esc2_out = 2000;
-  }
-  if (esc3_out < 1000)
-  {
-    esc3_out = 1000;
-  }
-  else if (esc3_out > 2000)
-  {
-    esc3_out = 2000;
-  }
-  if (esc4_out < 1000)
-  {
-    esc4_out = 1000;
-  }
-  else if (esc4_out > 2000)
-  {
-    esc4_out = 2000;
-  }
+  esc1_out = constrain(esc1_out, 1000, 2000);
+  esc2_out = constrain(esc2_out, 1000, 2000);
+  esc3_out = constrain(esc3_out, 1000, 2000);
+  esc4_out = constrain(esc4_out, 1000, 2000);
 
   writeEsc(esc1_out, esc2_out, esc3_out, esc4_out);
 }

@@ -1,4 +1,25 @@
 #include "Init.h" //Initialization mostly done here
+#include "components/ComponentBase.hpp"
+
+std::vector<ComponentBase*> components;
+
+void init()
+{
+  // Initialize all components
+  for (auto component : components)
+  {
+    component->init();
+  }
+}
+
+void update()
+{
+  // Update all components
+  for (auto component : components)
+  {
+    component->update();
+  }
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void setup()

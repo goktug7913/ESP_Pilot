@@ -10,12 +10,14 @@ extern ConfigSuite CfgMan;
 AsyncWebServer server(80);
 WebSocketsServer webSocketServer(81); // Initialize WebSocket server on port 81
 
-void Webserver::init() {
+void Webserver::init()
+{
     WiFiClass::mode(WIFI_MODE_APSTA);
     WiFi.begin(ssid, password);
 
     // Print the IP address when connected
-    while (WiFiClass::status() != WL_CONNECTED) {
+    while (WiFiClass::status() != WL_CONNECTED)
+    {
         delay(3000);
         Serial.print(".");
     }
@@ -30,39 +32,42 @@ void Webserver::init() {
 
     DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
     server.begin();
-    /*
-        Architecture planning:
-        We can either serve a frontend from the ESP, or we can serve a frontend from a separate server.
-        Ideally we will use a React App as the frontend, and serve it from a separate server.
-        But that adds some caveats:
-        - We need to make sure the client is connected to the same network as the ESP
-        - Frontend needs to know the IP address of the ESP so it can send requests to it
-        - Where will the frontend be hosted? options:
-            - Hosted on Vercel, frontend will explore the client's network for the ESP
-            - Hosted on the ESP, frontend will be served from the ESP
-            - Distribute the frontend as a standalone app, frontend will explore the client's network for the ESP
-    */
 
-    // WebSocket event handler for arm state updates
-    webSocketServer.onEvent([](uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+    xTaskCreatePinnedToCore(
+        [](void *parameter)
+        {
+            /*
+                Architecture planning:
+                We can either serve a frontend from the ESP, or we can serve a frontend from a separate server.
+                Ideally we will use a React App as the frontend, and serve it from a separate server.
+                But that adds some caveats:
+                - We need to make sure the client is connected to the same network as the ESP
+                - Frontend needs to know the IP address of the ESP so it can send requests to it
+                - Where will the frontend be hosted? options:
+                    - Hosted on the ESP, frontend will be served from the ESP
+                    - Distribute the frontend as a standalone app, frontend will explore the client's network for the ESP
+            */
+
+            // WebSocket event handler for arm state updates
+            webSocketServer.onEvent([](uint8_t num, WStype_t type, uint8_t *payload, size_t length)
+                                    {
         switch(type) {
             case WStype_TEXT: {
                 // Log message
                 Serial.printf("[%u] get Text: %s\n", num, payload);
             }
             // ... other WebSocket event types
-        }
-    });
+        } });
 
-    // Start WebSocket server
-    webSocketServer.begin();
+            // Start WebSocket server
+            webSocketServer.begin();
 
-    // API endpoints
-    server.on("/api", HTTP_GET, [](AsyncWebServerRequest *request) {
-        request->send(200, "text/plain", "Hello, world");
-    });
+            // API endpoints
+            server.on("/api", HTTP_GET, [](AsyncWebServerRequest *request)
+                      { request->send(200, "text/plain", "Hello, world"); });
 
-    server.on("/pid", HTTP_GET, [](AsyncWebServerRequest *request) {
+            server.on("/pid", HTTP_GET, [](AsyncWebServerRequest *request)
+                      {
         auto const cfg = CfgMan.getActiveCfg();
         // Convert cfg to JSON
         StaticJsonDocument<200> doc;
@@ -80,10 +85,10 @@ void Webserver::init() {
         String json;
         serializeJson(doc, json);
 
-        request->send(200, "application/json", json);
-    });
+        request->send(200, "application/json", json); });
 
-    server.on("/pid", HTTP_POST, [](AsyncWebServerRequest *request){
+            server.on("/pid", HTTP_POST, [](AsyncWebServerRequest *request)
+                      {
         // Convert JSON to cfg
         StaticJsonDocument<200> doc;
         deserializeJson(doc, request->arg("plain"));
@@ -119,10 +124,10 @@ void Webserver::init() {
         String json;
         serializeJson(response, json);
 
-        request->send(200, "application/json", json);
-    });
+        request->send(200, "application/json", json); });
 
-    server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+            server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request)
+                      {
         // Convert cfg to JSON
         StaticJsonDocument<32> doc;
         doc["temperature"] = FliCon.temperature;
@@ -130,15 +135,15 @@ void Webserver::init() {
         String json;
         serializeJson(doc, json);
 
-        request->send(200, "application/json", json);
-    });
+        request->send(200, "application/json", json); });
 
-    server.on("/restart", HTTP_POST, [](AsyncWebServerRequest *request){
+            server.on("/restart", HTTP_POST, [](AsyncWebServerRequest *request)
+                      {
         request->send(200, "text/plain", "OK");
-        ESP.restart();
-    });
+        ESP.restart(); });
 
-    server.on("/armState", HTTP_GET, [](AsyncWebServerRequest *request){
+            server.on("/armState", HTTP_GET, [](AsyncWebServerRequest *request)
+                      {
         // Convert cfg to JSON
         StaticJsonDocument<32> doc;
         doc["armed"] = FliCon.armed;
@@ -146,10 +151,13 @@ void Webserver::init() {
         String json;
         serializeJson(doc, json);
 
-        request->send(200, "application/json", json);
-    });
-}
-
-void Webserver::handleClient() {
-    
+        request->send(200, "application/json", json); });
+        },
+        "WebserverInitTask", // Task name
+        32000,               // Stack size (this value might need to be adjusted)
+        NULL,                // Task input parameter
+        1,                   // Task priority
+        NULL,                // Task handle
+        1                    // Core ID
+    );
 }
