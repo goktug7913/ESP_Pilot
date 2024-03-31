@@ -13,6 +13,7 @@ public:
     PIDController(PIDCoefficients coefficients);
     float calculate(float setpoint, float measured_value);
     void setCoefficients(PIDCoefficients coefficients);
+    void setCoefficients(float kp, float ki, float kd);
     void reset();
 
 private:

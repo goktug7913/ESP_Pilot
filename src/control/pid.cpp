@@ -1,7 +1,11 @@
 #include "control/pid.hpp"
 
 PIDController::PIDController(PIDCoefficients coefficients) {
-    coefficients_ = coefficients;
+    setCoefficients(coefficients);
+}
+
+PIDController::PIDController(float kp, float ki, float kd) {
+    setCoefficients({kp, ki, kd});
 }
 
 float PIDController::calculate(float setpoint, float measured_value) {
@@ -14,6 +18,10 @@ float PIDController::calculate(float setpoint, float measured_value) {
 
 void PIDController::setCoefficients(PIDCoefficients coefficients) {
     coefficients_ = coefficients;
+}
+
+void PIDController::setCoefficients(float kp, float ki, float kd) {
+    setCoefficients({kp, ki, kd});
 }
 
 void PIDController::reset() {
