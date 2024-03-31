@@ -1,27 +1,25 @@
-#include "Init.h" //Initialization mostly done here
+// main.cpp
+#include "main.hpp"
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void setup(){
-  coldstart();
-  initEscDrive(); // move into coldstart()
-}
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void loop() {
-  // Program should recover from here in a second or two during flight or the quadcopter will probably crash
-  // You should get back into the flight loop as fast as possible if fallback happens
+ESP_Pilot::ESP_Pilot() : core() {}
 
-  //FliCon.writeEsc(1000,1000,1000,1000);
-  SerialMan.ReceiveMsg();
-
-  if(FliCon.rx_raw[4] == 2000){FliCon.armed = 1;}  // Arm on CH5 high
-
-  if (FliCon.armed){FliCon.Start();} // Directly enter flight loop with debugging
+void ESP_Pilot::setup() {
+    // Initialize system components
+    // This would include setting up RTOS tasks, initializing drivers, etc.
+    core.init();
 }
 
-extern "C" void app_main() {
-  // Temporary solution while migrating from Arduino to ESP-IDF
-  
-  setup();
+void ESP_Pilot::loop() {
+    // Main application loop
+    while (true) {
+        // Execute flight control loop
+        core.update();
+    }
+}
 
-  while (1) { loop(); }
+int main() {
+    ESP_Pilot app;
+    app.setup();
+    app.loop();
+    return 0; // This should never be reached
 }
