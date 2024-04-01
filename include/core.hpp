@@ -1,4 +1,6 @@
+#pragma once
 #include "control/pid.hpp"
+#include "control/input.hpp"
 
 class EsppCore {
 private:
@@ -10,6 +12,7 @@ private:
     PIDController pidRoll;
     PIDController pidPitch;
     PIDController pidYaw;
+    InputSystem input;
 
 public:
     EsppCore();
