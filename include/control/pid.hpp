@@ -9,11 +9,12 @@ struct PIDCoefficients {
 
 class PIDController {
 public:
-    PIDController(float kp, float ki, float kd);
     PIDController(PIDCoefficients coefficients);
+    PIDController(float kp, float ki, float kd);
     float calculate(float setpoint, float measured_value);
     void setCoefficients(PIDCoefficients coefficients);
     void setCoefficients(float kp, float ki, float kd);
+    PIDCoefficients getCoefficients();
     void reset();
 
 private:

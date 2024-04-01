@@ -2,10 +2,10 @@
 
 class EsppCore {
 private:
-    bool bInputEnable = 1;
-    bool bOutputEnable = 0;
-    bool bStepEnable = 0;
-    bool bSensorsEnable = 0;
+    bool bInputEnable = true;
+    bool bOutputEnable = false;
+    bool bStepEnable = false;
+    bool bSensorsEnable = true;
 
     PIDController pidRoll;
     PIDController pidPitch;

@@ -13,8 +13,8 @@ void EsppCore::init() {
 void EsppCore::start() {
     // Start system components
     // This would include starting RTOS tasks, enabling drivers, etc.
-    bInputEnable = 1;
-    bOutputEnable = 1;
-    bStepEnable = 1;
-    bSensorsEnable = 1;
+    bInputEnable = true;
+    bOutputEnable = true;
+    bStepEnable = true;
+    bSensorsEnable = true;
 }
