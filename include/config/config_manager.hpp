@@ -9,4 +9,8 @@ private:
 public:
     ConfigManager();
     ~ConfigManager();
+    ESP_Pilot_Config getConfig();
+    void setConfig(ESP_Pilot_Config config);
+    bool saveConfig();
+    bool loadConfig();
 };

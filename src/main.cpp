@@ -6,6 +6,5 @@ EsppCore core;
 
 extern "C" void app_main()
 {
-    core.init();
     core.start();
 }

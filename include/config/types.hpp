@@ -1,5 +1,6 @@
 #pragma once
 #include "control/pid.hpp"
+#include "drivers/receiver/base.hpp"
 
 struct WiFi_Config {
     char ssid[32] = "";
@@ -11,4 +12,5 @@ struct ESP_Pilot_Config {
     PIDCoefficients pidGainsPitch;
     PIDCoefficients pidGainsRoll;
     PIDCoefficients pidGainsYaw;
+    RxType receiverType;
 };

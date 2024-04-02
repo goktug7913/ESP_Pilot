@@ -1,4 +1,6 @@
 #pragma once
+#include "drivers/receiver/base.hpp"
+
 struct InputParameters {
     float output_min = 0;
     float output_max = 1;
@@ -9,9 +11,17 @@ struct InputParameters {
     float output_center = output_max - output_min / 2;
 };
 
+struct Channel {
+    uint8_t number;
+    float value;
+};
+
 class InputSystem {
 private:
     InputParameters params;
+    ReceiverBase* rx_driver;
+
+    void init();
 public:
     InputSystem();
     InputSystem(InputParameters p);

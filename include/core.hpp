@@ -1,6 +1,7 @@
 #pragma once
 #include "control/pid.hpp"
 #include "control/input.hpp"
+#include "config/config_manager.hpp"
 
 class EsppCore {
 private:
@@ -9,13 +10,16 @@ private:
     bool bStepEnable = false;
     bool bSensorsEnable = true;
 
+    ConfigManager config;
+    InputSystem input;
     PIDController pidRoll;
     PIDController pidPitch;
     PIDController pidYaw;
-    InputSystem input;
+    
 
+    void init();
+    
 public:
     EsppCore();
-    void init();
     void start();
 };
