@@ -1,5 +1,7 @@
 #pragma once
 #include <stdint.h>
+#include "control/input.hpp"
+#include <vector>
 
 /*  - note -
     TODO: I need to analyze this:
@@ -30,14 +32,14 @@ enum RxType {
 
 class ReceiverBase {
 public:
-virtual ~ReceiverBase() = default; 
+    virtual ~ReceiverBase() = default; 
     virtual void init() = 0;
     virtual void read() = 0;
-    virtual uint16_t getChannel(uint8_t channel) = 0;
-    virtual bool isConnected() const = 0;
+    virtual Channel getChannel(uint8_t ch) { return channels[ch]; };
+    virtual bool isConnected() { return false; };
 protected:
     RxType type;   // Receiver protocol type
     uint8_t numChannels; // Number of supported channels
-    uint16_t channels[16];
+    std::vector<Channel> channels;
     virtual void setChannel(uint8_t channel, uint16_t value) = 0; 
 };
