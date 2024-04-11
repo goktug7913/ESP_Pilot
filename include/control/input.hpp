@@ -1,35 +1,20 @@
 #pragma once
 #include "drivers/receiver/base.hpp"
+#include "control/channel.hpp"
+#include <vector>
 
-struct InputParameters {
-    float output_min = 0;
-    float output_max = 1;
-    float input_min = 1000;
-    float input_max = 2000;
-    float deadband = 0;
-    float input_center = input_max - input_min / 2;
-    float output_center = output_max - output_min / 2;
-};
-
-struct Channel {
-    uint8_t number;
-    float value;
+struct InputLayout {
+    int num_channels;
+    std::vector<Channel> channels;
 };
 
 class InputSystem {
 private:
-    InputParameters params;
     ReceiverBase* rx_driver;
-
+    int num_channels;
     void init();
+protected:
+    std::vector<Channel> channels;
 public:
-    InputSystem();
-    InputSystem(InputParameters p);
-
-    void setParameters(InputParameters p);
-    InputParameters getParameters();
-    
-    float map(float input);
-    float map(float input, float output_min, float output_max);
-
+    InputSystem(std::vector<Channel> c);
 };
