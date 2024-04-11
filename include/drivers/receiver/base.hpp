@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include "control/input.hpp"
 #include <vector>
 
 /*  - note -
@@ -35,11 +34,11 @@ public:
     virtual ~ReceiverBase() = default; 
     virtual void init() = 0;
     virtual void read() = 0;
-    virtual Channel getChannel(uint8_t ch) { return channels[ch]; };
     virtual bool isConnected() { return false; };
 protected:
     RxType type;   // Receiver protocol type
     uint8_t numChannels; // Number of supported channels
-    std::vector<Channel> channels;
-    virtual void setChannel(uint8_t channel, uint16_t value) = 0; 
+    void setChannel(uint8_t channel, uint16_t value);
 };
+
+void rmt_isr_handler(void *arg);
