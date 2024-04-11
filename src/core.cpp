@@ -1,6 +1,7 @@
 #include "core.hpp"
 
-EsppCore::EsppCore() : pidRoll(0.0f, 0.0f, 0.0f), pidPitch(0.0f, 0.0f, 0.0f), pidYaw(0.0f, 0.0f, 0.0f) {
+EsppCore::EsppCore() : config(ConfigManager()), input(
+    std::vector<Channel>()), pidRoll(0.0f, 0.0f, 0.0f), pidPitch(0.0f, 0.0f, 0.0f), pidYaw(0.0f, 0.0f, 0.0f) {
     this->init();
 }
 
