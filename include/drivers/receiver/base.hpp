@@ -40,5 +40,3 @@ protected:
     uint8_t numChannels; // Number of supported channels
     void setChannel(uint8_t channel, uint16_t value);
 };
-
-void rmt_isr_handler(void *arg);

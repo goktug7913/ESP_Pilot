@@ -1,6 +1,5 @@
 #pragma once
 #include "drivers/receiver/base.hpp"
-#include "driver/rmt.h"
 
 class PWMReceiver : public ReceiverBase {
 public:
@@ -8,6 +7,6 @@ public:
     ~PWMReceiver() override = default;
     void init() override;
     void read() override;
+    float stub;
 private:
-    RingbufHandle_t rb;
 };
