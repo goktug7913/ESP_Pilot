@@ -1,5 +1,7 @@
 #include "control/channel.hpp"
 
+static const char* TAG = "Rx Channel";
+
 Channel::Channel() {
     params = ChannelParameters();
 }

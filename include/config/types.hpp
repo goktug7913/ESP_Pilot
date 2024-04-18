@@ -1,5 +1,6 @@
 #pragma once
 #include "control/pid.hpp"
+#include "control/input.hpp"
 #include "drivers/receiver/base.hpp"
 
 struct WiFi_Config {
@@ -8,6 +9,7 @@ struct WiFi_Config {
 };
 
 struct ESP_Pilot_Config {
+    InputLayout inputLayout;
     WiFi_Config wifi;
     PIDCoefficients pidGainsPitch;
     PIDCoefficients pidGainsRoll;

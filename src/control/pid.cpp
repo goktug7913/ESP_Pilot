@@ -1,5 +1,7 @@
 #include "control/pid.hpp"
 
+static const char* TAG = "PID";
+
 float PIDController::calculate(float setpoint, float measured_value) {
     float error = setpoint - measured_value;
     integral_ += error;

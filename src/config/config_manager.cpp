@@ -1,5 +1,7 @@
 #include "config/config_manager.hpp"
 
+static const char* TAG = "ConfigManager";
+
 ConfigManager::ConfigManager() {
     // Load default values
 }
