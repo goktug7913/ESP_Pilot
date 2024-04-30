@@ -15,7 +15,6 @@ PWMReceiver::PWMReceiver() {
 }
 
 void PWMReceiver::init() {
-
     ESP_LOGI(TAG, "Initializing RMT Rx channels");
 
     rmt_channel_handle_t channels[PWM_CHANNELS_NUM];
@@ -29,20 +28,15 @@ void PWMReceiver::init() {
             .flags = {.with_dma = false},
         };
 
-        auto res = rmt_new_rx_channel(&rmt_rx, &channels[i]);
-        ESP_ERROR_CHECK(res);
+        ESP_ERROR_CHECK(rmt_new_rx_channel(&rmt_rx, &channels[i]));
 
-        
         rmt_receive_config_t cfg = {
             .signal_range_min_ns = 1000,
             .signal_range_max_ns = 2000,
         };
 
-        auto res2 = rmt_enable(channels[i]);
-        ESP_ERROR_CHECK(res2);
-
-        auto res3 = rmt_receive(channels[i], &stub, sizeof(stub), &cfg);
-        ESP_ERROR_CHECK(res3);
+        ESP_ERROR_CHECK(rmt_enable(channels[i]));
+        ESP_ERROR_CHECK(rmt_receive(channels[i], &stub, sizeof(stub), &cfg));
     }
     ESP_LOGI(TAG, "RMT Rx channels initialized");
 }

@@ -6,15 +6,16 @@
 struct InputLayout {
     int num_channels;
     std::vector<Channel> channels;
+    RxType rx_type;
 };
 
 class InputSystem {
 private:
     ReceiverBase* rx_driver;
-    int num_channels;
     void init();
 protected:
-    std::vector<Channel> channels;
+    InputLayout layout;
 public:
-    InputSystem(std::vector<Channel> c);
+    InputSystem();
+    InputSystem(InputLayout l);
 };
