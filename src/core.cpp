@@ -3,8 +3,7 @@
 
 static const char* TAG = "ESP Pilot Core";
 
-EsppCore::EsppCore() : config(ConfigManager()), input(
-    std::vector<Channel>()), pidRoll(0.0f, 0.0f, 0.0f), pidPitch(0.0f, 0.0f, 0.0f), pidYaw(0.0f, 0.0f, 0.0f) {
+EsppCore::EsppCore() : config(ConfigManager()), input(), pidRoll(0.0f, 0.0f, 0.0f), pidPitch(0.0f, 0.0f, 0.0f), pidYaw(0.0f, 0.0f, 0.0f) {
     ESP_LOGI(TAG, "early init begin");
     this->init();
 }

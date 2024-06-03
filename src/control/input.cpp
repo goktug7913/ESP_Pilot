@@ -9,9 +9,10 @@ InputSystem::InputSystem() {
 }
 
 InputSystem::InputSystem(InputLayout l) {
-    layout = l;
-    switch (layout.rx_type)
-    {
+    this->layout = l;
+
+    // Determine the correct receiver class to construct.
+    switch (layout.rx_type) {
     case RxType::PWM:
         rx_driver = new PWMReceiver();
         break;
@@ -19,6 +20,8 @@ InputSystem::InputSystem(InputLayout l) {
         ESP_LOGE(TAG, "Invalid receiver type");
         break;
     }
+
+    // Continue init
     init();
 }
 

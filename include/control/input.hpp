@@ -4,9 +4,9 @@
 #include <vector>
 
 struct InputLayout {
+    RxType rx_type;
     int num_channels;
     std::vector<Channel> channels;
-    RxType rx_type;
 };
 
 class InputSystem {

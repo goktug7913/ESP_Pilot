@@ -5,8 +5,8 @@
 
 static const char* TAG = "PWM Receiver Driver";
 
-constexpr std::array<uint8_t, 6> RECEIVER_GPIO = {35, 34, 39, 36, 27, 14};
-constexpr int PWM_CHANNELS_NUM = 6;                                                // Receiver PWM Channel Number
+constexpr int PWM_CHANNELS_NUM = 6; // Receiver PWM Channel Number
+constexpr std::array<uint8_t, PWM_CHANNELS_NUM> RECEIVER_GPIO = {35, 34, 39, 36, 27, 14}; // We need to un-hardcode these
 constexpr std::array<uint8_t, PWM_CHANNELS_NUM> PWM_CHANNELS = {1, 2, 3, 4, 5, 6}; // Change the channels according to the number of channels
 
 PWMReceiver::PWMReceiver() {
@@ -31,6 +31,7 @@ void PWMReceiver::init() {
         ESP_ERROR_CHECK(rmt_new_rx_channel(&rmt_rx, &channels[i]));
 
         rmt_receive_config_t cfg = {
+            // The PWM range is 1000 to 2000 ns by default.
             .signal_range_min_ns = 1000,
             .signal_range_max_ns = 2000,
         };

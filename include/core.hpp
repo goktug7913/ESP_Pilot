@@ -16,7 +16,6 @@ private:
     PIDController pidPitch;
     PIDController pidYaw;
     
-
     void init();
     
 public:

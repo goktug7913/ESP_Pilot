@@ -29,6 +29,8 @@ enum RxType {
     // Only PWM is implemented right now, so others are commented out
 };
 
+// This is the base class for all types of receivers.
+// It must not be used directly and always be derived.
 class ReceiverBase {
 public:
     virtual ~ReceiverBase() = default; 

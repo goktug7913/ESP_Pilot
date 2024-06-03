@@ -1,7 +1,7 @@
 #pragma once
 #include "drivers/receiver/base.hpp"
 
-class PWMReceiver : public ReceiverBase {
+class PWMReceiver : public virtual ReceiverBase {
 public:
     PWMReceiver();
     ~PWMReceiver() override = default;
