@@ -14,7 +14,7 @@
     To use a different driver, we have to recompile the binary.
 
     Maybe we can use a factory pattern to create the driver.
-    Another option is to dynamically load the driver at runtime.
+    Another option is to dynamicly load the driver at runtime.
     But that would require a more complex architecture,
     which might be an overkill for this project.
 */
@@ -35,8 +35,8 @@ class ReceiverBase {
 public:
     virtual ~ReceiverBase() = default; 
     virtual void init() = 0;
-    virtual void read() = 0;
     virtual bool isConnected() { return false; };
+    virtual uint16_t getChannel(uint8_t channel) = 0;
 protected:
     RxType type;   // Receiver protocol type
     uint8_t numChannels; // Number of supported channels

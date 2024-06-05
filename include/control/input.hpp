@@ -13,9 +13,12 @@ class InputSystem {
 private:
     ReceiverBase* rx_driver;
     void init();
+    
 protected:
     InputLayout layout;
+
 public:
     InputSystem();
     InputSystem(InputLayout l);
+    void read();
 };
