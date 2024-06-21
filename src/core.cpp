@@ -5,20 +5,26 @@
 
 static const char* TAG = "ESP Pilot Core";
 
-EsppCore::EsppCore() : config(ConfigManager()), input(), pidRoll(0.0f, 0.0f, 0.0f), pidPitch(0.0f, 0.0f, 0.0f), pidYaw(0.0f, 0.0f, 0.0f) {
-    ESP_LOGI(TAG, "early init begin");
+EsppCore::EsppCore() {
+    ESP_LOGI(TAG, "early init begin, creating objects");
+
+    // Early initialization
+    config = ConfigManager();
+    input = InputSystem();
+    pidRoll = PIDController(config.getConfig().pidGainsRoll);
+    pidPitch = PIDController(config.getConfig().pidGainsPitch);
+    pidYaw = PIDController(config.getConfig().pidGainsYaw);
+    mixer = Mixer(config.getConfig().motorGeometry);
+
+    // Handoff to init
     this->init();
 }
 
 void EsppCore::init() {
     // Initialize system components
     // This would include setting up RTOS tasks, initializing drivers, etc.
-    ESP_LOGI(TAG, "init begin");
+    ESP_LOGI(TAG, "init begin, loading config");
     config.loadConfig();
-    
-    pidRoll.setCoefficients(1.0f, 0.0f, 0.0f);
-    pidPitch.setCoefficients(1.0f, 0.0f, 0.0f);
-    pidYaw.setCoefficients(1.0f, 0.0f, 0.0f);
 }
 
 void EsppCore::start() {

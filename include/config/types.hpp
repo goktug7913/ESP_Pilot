@@ -8,7 +8,13 @@ struct WiFi_Config {
     char password[64] = "";
 };
 
+enum MotorGeometry {
+    QUAD_X,
+    QUAD_PLUS,
+};
+
 struct ESP_Pilot_Config {
+    MotorGeometry motorGeometry;
     InputLayout inputLayout;
     WiFi_Config wifi;
     PIDCoefficients pidGainsPitch;

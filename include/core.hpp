@@ -1,7 +1,8 @@
 #pragma once
-#include "control/pid.hpp"
-#include "control/input.hpp"
 #include "config/config_manager.hpp"
+#include "control/input.hpp"
+#include "control/pid.hpp"
+#include "control/mixer.hpp"
 
 class EsppCore {
 private:
@@ -15,6 +16,7 @@ private:
     PIDController pidRoll;
     PIDController pidPitch;
     PIDController pidYaw;
+    Mixer mixer;
     
     void init();
     
