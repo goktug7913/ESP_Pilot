@@ -144,8 +144,8 @@ void coldstart()
   }*/
 
   byte status = mpu.begin(); // Initialize MPU6050
-  Serial.print(F("MPU6050 status: "));
-  Serial.print(F(status));
+  // Serial.print(F("MPU6050 status: "));
+  // Serial.print(F(status));
 
   if (status != 0)
   {
@@ -165,10 +165,10 @@ void coldstart()
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // Should detect if reboot happened mid-flight at this point and recover offsets from EEPROM
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  Serial.println(F("Calculating offsets, don't move the quad"));
+  // Serial.println(F("Calculating offsets, don't move the quad"));
   mpu.calcOffsets(); // gyro and accelero
   delay(1000);       // wait for stable readings
-  Serial.println("Done!\n");
+  // Serial.println("Done!\n");
 
   radioNumber = true;
   // radioSetup();
